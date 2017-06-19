@@ -49,7 +49,7 @@ class Render(object):
 
         self.rd_loc = self._plt_map.circle(
             [-1] * self.total_num, [-1] * self.total_num,
-            size=[PLAYER_RADIUS*50] * self.player_num + [NPC_RADIUS*50] * self.npc_num,
+            radius=[_.attribute.radius for _ in self._map.players] + [_.attribute.radius for _ in self._map.npcs],
             line_color="gold",
             line_width=[2] * self.player_num + [1] * self.npc_num,
             fill_color=["green"] * self.player_num + ["firebrick"] * self.npc_num,
