@@ -6,6 +6,7 @@ GAME_NAME = "tiny-rpg-ball-v0"
 MAP_CENTER = Vector2(0, 0)
 MAP_SIZE = Vector2(10, 10)
 
+MAP_BOUND = Bounds2(MAP_CENTER, MAP_SIZE)
 
 NPCS = [
     edict(

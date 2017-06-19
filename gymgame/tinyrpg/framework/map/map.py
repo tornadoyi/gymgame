@@ -12,6 +12,8 @@ class Map(Event):
         self._object_dict = {}
         self._game = None
 
+    @property
+    def bounds(self): return self._bounds
 
     @property
     def game(self): return self._game

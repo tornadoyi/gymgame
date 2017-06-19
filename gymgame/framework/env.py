@@ -14,6 +14,11 @@ class Environment(object):
         # runtime
         self._state = None
 
+    @property
+    def game(self): return self._game
+
+    @property
+    def serializer(self): return self._serializer
 
     @property
     def total_steps(self): return self._game.total_steps
