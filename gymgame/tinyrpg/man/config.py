@@ -27,7 +27,7 @@ def gen_players():
             position = Vector2(0, 0),
             direct = Vector2(0, 0),
             speed = 2.0,
-            radius = 0.5,
+            radius = PLAYER_RADIUS,
             hp = 15
         )
     ]
