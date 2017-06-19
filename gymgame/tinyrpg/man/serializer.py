@@ -10,5 +10,5 @@ class Serializer(framework.Serializer):
 
 
     def _select_character(self, k):
-        k.add(Attr.hp, None, k.n_division)
+        k.add(Attr.position, None, k.n_division)
 

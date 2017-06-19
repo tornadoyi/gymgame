@@ -110,11 +110,7 @@ class SerializerKernel(object):
         param_path = self.create_path(self._cur_path, k)
         rv = self.visit(self._root, param_path)
         sv = serializer(rv)
-        nv = normalizer(sv, sv)
         s_size = self._size(sv)
-        n_size = self._size(nv)
-
-        assert s_size == n_size
 
         # calculate start location
         st = self._serialized_size

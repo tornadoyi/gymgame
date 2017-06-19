@@ -32,7 +32,7 @@ class Map(Event):
 
     def add(self, o, position=None):
         self._object_dict[o.id] = o
-        o.position = position
+        if position is not None: o.attribute.position = position
         o.enter_map(self)
 
 
