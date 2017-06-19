@@ -55,6 +55,6 @@ class Game(framework.Game):
 def make():
     return Game(
         lambda : Map(),
-        lambda : [Player(data) for data in config.PLAYERS],
-        lambda: [NPC(data) for data in config.NPCS]
+        lambda : [Player(data) for data in config.gen_players()],
+        lambda: [NPC(data) for data in config.gen_npcs()]
     )

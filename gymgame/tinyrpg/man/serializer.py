@@ -6,7 +6,7 @@ Attr = config.Attr
 class Serializer(framework.Serializer):
 
     def deserialize_action(self, data):
-        return (config.PLAYERS[0].id, config.Action.idle)
+        return (config.PLAYER_IDS[0], config.Action.idle)
 
 
     def _select_character(self, k):
