@@ -15,7 +15,11 @@ class Vector(np.ndarray):
     def magnitude(self): return np.sqrt(self.sqr_magnitude)
 
     @property
-    def normalized(self): return self / self.magnitude
+    def normalized(self):
+        if all(self) == 0:
+            return self
+        else:
+            return self / self.magnitude
 
 
     def redian(self, v): return np.arccos(self.dot(v) / (self.magnitude * v.magnitude))

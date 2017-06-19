@@ -1,5 +1,7 @@
+import numpy as np
 from gymgame import framework
 from . import config
+
 
 Attr = config.Attr
 
@@ -9,11 +11,25 @@ class Serializer(framework.Serializer):
         return (config.Action.idle)
 
 
-    def _gen_normalized_data(self, v):
-        return v
+    def _gen_normalized_data(self, v, game, *args):
+        k = self._kernel
+        map = game.map
+        n_players = len(map.players)
+        n_npcs = len(map.npcs)
+        n_chars = n_players + n_npcs
+
+        batch_v = v.reshape([n_chars, -1])
+        max_v = np.max(batch_v, axis=0)
+
+        pos_node = k.node('/map/players/0/position')
+        if pos_node is not None:
+            max_v[pos_node.start_pos : pos_node.end_pos] = [map.bounds.size.x, map.bounds.size.y]
+
+        return np.tile(max_v, n_chars)
 
 
-    def _select(self, k):
+
+    def _select(self, k, *args):
         k.enter('map')
 
         k.enter('players')
@@ -34,7 +50,10 @@ class Serializer(framework.Serializer):
         k.add(Attr.max_mp, None, k.n_division)
 
 
-    def _select_object(selfself, k):
+    def _select_object(self, k):
         k.add(Attr.position, None, k.n_division)
+        k.add(Attr.direct, None, k.n_division)
         k.add(Attr.speed, None, k.n_division)
         k.add(Attr.radius, None, k.n_division)
+
+

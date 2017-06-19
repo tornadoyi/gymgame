@@ -12,7 +12,9 @@ class Environment(object):
         self._serializer.on_start(game)
 
         # runtime
-        self._state = None
+        self._states = []
+        self._reset_count = 0
+
 
     @property
     def game(self): return self._game
@@ -30,7 +32,13 @@ class Environment(object):
     def terminal(self): return self._game.terminal
 
     @property
-    def state(self): return self._state
+    def state(self): return self._states[-1]
+
+    @property
+    def states(self): return self._states
+
+    @property
+    def reset_count(self): return self._reset_count
 
 
     def reset(self, *args, **kwargs): return self._reset(*args, **kwargs)
@@ -43,13 +51,16 @@ class Environment(object):
 
 
     def _reset(self, *args, **kwargs):
+        self._reset_count += 1
         self._game.reset(*args, **kwargs)
-        self._state = self._serializer.serialize_state(self._game)
+        s = self._serializer.serialize_state(self._game)
+        self._states = [s]
 
 
     def _step(self, *args, **kwargs):
         self._game.step(*args, **kwargs)
-        self._state = self._serializer.serialize_state(self._game)
+        s = self._serializer.serialize_state(self._game)
+        self._states.append(s)
 
 
     def _close(self, *args, **kwargs): return self._game.close(*args, **kwargs)
@@ -71,7 +82,14 @@ class EnvironmentGym(Environment, gym.Env):
         self.observation_space = spaces.Box(-np.inf, np.inf, self._serializer.state_shape())
         self.action_space = self._init_action_space()
 
+        # runtime
+        self._rewards = []
 
+    @property
+    def rewards(self): return self._rewards
+
+    @property
+    def reward(self): return self._rewards[-1]
 
     # virtual
     def _init_action_space(self): raise NotImplementedError("_reward should be implemented")
@@ -89,15 +107,17 @@ class EnvironmentGym(Environment, gym.Env):
 
     def _reset(self):
         Environment._reset(self)
-        return self._state
+        self._rewards = []
+        return self.state
 
 
     def _step(self, action):
         action = self._serializer.deserialize_action(action)
         Environment._step(self, action)
-        s = self._state
+        s = self.state
         r = self._reward()
         t = self.terminal
+        self._rewards.append(r)
         return s, r, t, None
 
 

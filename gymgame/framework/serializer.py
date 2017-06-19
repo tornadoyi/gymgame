@@ -63,6 +63,12 @@ class SerializerKernel(object):
     def serialized_size(self): return self._serialized_size
 
 
+    def node(self, path):
+        if path[0] != "/": path = self.create_path("/", path)
+        node = self._nodes.get(path)
+        return node
+
+
     def slice(self, v, path):
         if path[0] != "/": path = self.create_path("/", path)
         node = self._nodes.get(path)
@@ -78,7 +84,7 @@ class SerializerKernel(object):
         for i in range(len(self._serialized_nodes)):
             attr = self._serialized_nodes[i]
             v = self.visit(o, attr.path)
-            s = attr.serializer(v)
+            s = attr.serializer(v, o)
             serial = np.hstack([serial, s])
 
         if norm is None: return serial
@@ -91,7 +97,7 @@ class SerializerKernel(object):
             attr = self._serialized_nodes[i]
             s = serial[attr.start_pos: attr.end_pos]
             n = norm[attr.start_pos: attr.end_pos]
-            ns = attr.normalizer(s, n)
+            ns = attr.normalizer(s, n, o)
             norm_serial = np.hstack([norm_serial, ns])
 
         return norm_serial
@@ -104,8 +110,6 @@ class SerializerKernel(object):
         param_path = self.create_path(self._cur_path, k)
         rv = self.visit(self._root, param_path)
         sv = serializer(rv)
-        if any(sv) == 0:
-            print(rv)
         nv = normalizer(sv, sv)
         s_size = self._size(sv)
         n_size = self._size(nv)
@@ -115,7 +119,10 @@ class SerializerKernel(object):
         # calculate start location
         st = self._serialized_size
         self._serialized_size += s_size
-        self._serialized_nodes.append(_Attribute(param_path, st, self._serialized_size, serializer, normalizer))
+
+        attr = _Attribute(param_path, st, self._serialized_size, serializer, normalizer)
+        self._nodes[param_path] = attr
+        self._serialized_nodes.append(attr)
 
 
     def adds(self, selector):
@@ -127,16 +134,16 @@ class SerializerKernel(object):
             self.exit()
 
 
-    def s_float64(self, v):
+    def s_float64(self, v, *args, **kwargs):
         if self._size(v) == 1: v = [v]
         v = np.array(v, np.float64)
         return v
 
 
-    def n_none(self, v, n): return v
+    def n_none(self, v, n, *args, **kwargs): return v
 
 
-    def n_division(self, v, n):
+    def n_division(self, v, n, *args, **kwargs):
         assert any(n) != 0
         return v / n
 
@@ -192,9 +199,9 @@ class Serializer(object):
     def num_state(self): return self._num_state
 
     # virtual
-    def _gen_normalized_data(self, v): raise NotImplementedError("_gen_normalized_data should be implemented")
+    def _gen_normalized_data(self, v, *args): raise NotImplementedError("_gen_normalized_data should be implemented")
 
-    def _select(self, k): raise NotImplementedError("_select should be implemented")
+    def _select(self, k, *args): raise NotImplementedError("_select should be implemented")
 
 
     def state_shape(self, index=0): return self._state_shapes[index]
@@ -210,11 +217,11 @@ class Serializer(object):
 
         # create kernel
         self._kernel = SerializerKernel(game)
-        self._select(self._kernel)
+        self._select(self._kernel, game)
 
         # create normalized vector
         states = self.serialize_state(game)
-        self._norm = self._gen_normalized_data(states)
+        self._norm = self._gen_normalized_data(states, game)
 
 
         # get num state
@@ -227,8 +234,8 @@ class Serializer(object):
 
 
     def on_reset(self, game):
-        s = self.serialize_state(game)
-        self._norm = self._gen_normalized_data(s)
+        states = self.serialize_state(game)
+        self._norm = self._gen_normalized_data(states, game)
 
 
     def serialize_state(self, game): return self._kernel.serialize(game, self._norm)

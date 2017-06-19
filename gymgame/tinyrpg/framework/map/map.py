@@ -57,7 +57,7 @@ class Map(Event):
             return [o for o in self._object_dict.values() if isinstance(o, t)]
 
 
-    def move_toward(self, id, direct, out_delete=False):
+    def move_toward(self, id, direct, bounds_limit=True):
         o = self.find(id)
         tgt_pos = o.attribute.position + direct.normalized * o.attribute.speed * self.game.delta_time
         # todo cross point

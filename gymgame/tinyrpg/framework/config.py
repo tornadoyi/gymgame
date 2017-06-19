@@ -7,6 +7,7 @@ Attr = _enum(
     # object
     'id',
     'position',
+    'direct',
     'speed',
     'radius',
 

@@ -1,6 +1,8 @@
 
+
+
 import gym
-from gymgame.tinyrpg.ball import config
+from gymgame.tinyrpg.man import config
 import time
 
 

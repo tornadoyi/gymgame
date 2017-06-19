@@ -1,4 +1,4 @@
-from gymgame.engine import Event
+from gymgame.engine import Event, Vector2
 from ..config import Attr
 from .attribute import AttributeManager
 import numpy as np
@@ -55,7 +55,8 @@ class Object(Event):
     def _init_attribute(self):
         attr = self._attribute
         attr.add(Attr.id, init_required=True)
-        attr.add(Attr.position, base=np.array([0, 0]))
+        attr.add(Attr.position, base=Vector2(0, 0))
+        attr.add(Attr.direct, base=Vector2(0, 0))
         attr.add(Attr.speed, base=0.0, range=(0, np.inf))
         attr.add(Attr.radius, base=0.0, range=(0, np.inf))
 

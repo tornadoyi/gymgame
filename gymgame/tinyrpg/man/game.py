@@ -8,62 +8,47 @@ class Map(framework.Map):
 
 
     def _on_move(self, o):
-        char_list = self.finds(Player) if type(o) is NPC else self.finds(NPC)
 
-        o_pos, o_radius = o.attribute.position, o.attribute.radius
-        for char in char_list:
-            pos, radius = char.attribute.position,  char.attribute.radius
-            d = pos.distance(o_pos)
-            if d > o_radius + radius: continue
+        def _check_collision(a, b):
+            d = a.attribute.position.distance(b.attribute.position)
+            return a.attribute.radius + b.attribute.radius < d
 
-            # on collision
-            if o.attribute.hp > char.attribute.hp:
-                o.attribute.hp += char.attribute.hp
-                self.remove(char.attribute.id)
+        player = self.players[0]
+        npcs = self.npcs
+        if type(o) == NPC:
+            if _check_collision(o, player): player.attribute.hp = 0
 
-            else:
-                char.attribute.hp += o.attribute.hp
-                self.remove(o.attribute.id)
+        elif type(o) == Player:
+            for npc in npcs:
+                if not _check_collision(npc, player): continue
+                o.attribute.hp = 0
                 break
+
+        else: raise Exception("invalid object type {0}".format(type(o)))
 
 
 class NPCExtension(object):
+    @staticmethod
+    def move_toward(self, direct): self._map.move_toward(self.attribute.id, direct, bounds_limit=False)
 
     @staticmethod
-    def _update(self):
-        # find weak and strong
-        players = self._map.finds(Player)
-        weak = strong = None
-        for player in players:
-            if self.attribute.hp < player.attribute.hp:
-                strong = strong or player
-                strong = strong if strong.attribute.hp > player.attribute.hp else player
+    def move_to(self, position): self._map.move_to(self.attribute.id, position, bounds_limit=False)
 
-            else:
-                weak = weak or player
-                weak = weak if weak.attribute.hp < player.attribute.hp else player
-
-        # greedy for week
-        if weak is not None:
-            self.move_to(weak.attribute.position)
-            return
-
-
-        if strong is not None:
-            direct = self.attribute.position - strong.attribute.position
-            self.move_toward(direct)
-            return
+    @staticmethod
+    def _update(self): self.move_toward(self.attribute.direct)
 
 
 NPC._update = NPCExtension._update
+NPC.move_toward = NPCExtension.move_toward
+NPC.move_to = NPCExtension.move_to
 
 
 class Game(framework.Game):
 
     def _check_terminal(self):
         players = self._map.finds(Player)
-        npcs = self._map.finds(NPC)
-        return len(players) == 0 or len(npcs) == 0
+        return players[0].attribute.hp < 1e-6
+
 
 
 

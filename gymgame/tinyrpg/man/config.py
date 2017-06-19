@@ -1,7 +1,7 @@
 from gymgame.engine import *
 from ..framework.config import *
 
-GAME_NAME = "tiny-rpg-ball-v0"
+GAME_NAME = "tiny-rpg-man-v0"
 
 MAP_CENTER = Vector2(0, 0)
 MAP_SIZE = Vector2(10, 10)
