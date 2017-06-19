@@ -61,6 +61,9 @@ class Environment(object):
 
 
 class EnvironmentGym(Environment, gym.Env):
+
+    metadata = {'render.modes': ['human', 'rgb_array']}
+
     def __init__(self, initializer):
         Environment.__init__(self, *initializer())
 

@@ -10,3 +10,4 @@ env.reset()
 while True:
     time.sleep(1.0)
     env.step([])
+    env.render()

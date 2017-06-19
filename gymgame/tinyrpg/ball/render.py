@@ -13,13 +13,15 @@ class Render(object):
         bounds = self._map.bounds
         output_notebook()
         self._plt_map = figure(
-            plot_width=int(bounds.size.x),
-            plot_height=int(bounds.size.y),
+            plot_width=int(bounds.size.x)*100,
+            plot_height=int(bounds.size.y)*100,
             toolbar_location=None,
             x_range=(int(bounds.min.x), int(bounds.max.x)),
             y_range=(int(bounds.min.y), int(bounds.max.y)),
         )
 
+        show(self._plt_map, notebook_handle=True)
+
 
     def update(self):
-        pass
+        push_notebook()

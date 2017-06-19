@@ -23,7 +23,7 @@ FULLVERSION = VERSION
 
 
 
-setup(name='gym-game',
+setup(name='gymgame',
       version=VERSION,
       description="framework and games of gym",
       author='yi gu',
