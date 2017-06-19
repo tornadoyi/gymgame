@@ -5,6 +5,7 @@ from bokeh.layouts import gridplot
 import numpy as np
 import random
 import time
+from .config import PLAYER_RADIUS, NPC_RADIUS
 
 # ! only used to temporarily shutdown bokeh warning !
 import warnings
@@ -48,10 +49,10 @@ class Render(object):
 
         self.rd_loc = self._plt_map.circle(
             [-1] * self.total_num, [-1] * self.total_num,
-            size=[50] * self.player_num + [20] * self.npc_num,
+            size=[PLAYER_RADIUS*50] * self.player_num + [NPC_RADIUS*50] * self.npc_num,
             line_color="gold",
-            line_width=[10] * self.player_num + [1] * self.npc_num,
-            fill_color=["green"] * self.player_num + ["yellow"] * self.npc_num,
+            line_width=[2] * self.player_num + [1] * self.npc_num,
+            fill_color=["green"] * self.player_num + ["firebrick"] * self.npc_num,
             fill_alpha=0.6)
 
         # 显示reward趋势
