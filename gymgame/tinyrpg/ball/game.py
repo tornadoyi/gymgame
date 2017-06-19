@@ -10,9 +10,9 @@ class Map(framework.Map):
     def _on_move(self, o):
         char_list = self.finds(Player) if type(o) is NPC else self.finds(NPC)
 
-        o_pos, o_radius = o.attribute.postion, o.attribute.radius
+        o_pos, o_radius = o.attribute.position, o.attribute.radius
         for char in char_list:
-            pos, radius = char.attribute.postion,  char.attribute.radius
+            pos, radius = char.attribute.position,  char.attribute.radius
             d = pos.distance(o_pos)
             if d > o_radius + radius: continue
 

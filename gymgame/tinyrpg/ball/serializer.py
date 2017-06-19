@@ -6,7 +6,7 @@ Attr = config.Attr
 class Serializer(framework.Serializer):
 
     def deserialize_action(self, data):
-        return (config.Action.idle)
+        return (config.PLAYERS[0].id, config.Action.idle)
 
 
     def _gen_normalized_data(self, v):

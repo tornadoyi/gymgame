@@ -85,6 +85,7 @@ class EnvironmentGym(Environment, gym.Env):
 
 
     def _step(self, action):
+        action = self._serializer.deserialize_action(action)
         Environment._step(self, action)
         s = self._state
         r = self._reward()

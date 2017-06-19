@@ -40,7 +40,7 @@ class Game(framework.Game):
 
 
         # npc do
-        ids = [o.id.value for o in self._map.finds(NPC)]
+        ids = [o.id for o in self._map.finds(NPC)]
         for id in ids:
             npc = self._map.find(id, exception=False)
             if npc is None: continue
