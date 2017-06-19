@@ -8,15 +8,16 @@ class Map(framework.Map):
 
 
     def _on_move(self, o):
-
         def _check_collision(a, b):
             d = a.attribute.position.distance(b.attribute.position)
-            return a.attribute.radius + b.attribute.radius < d
+            return (a.attribute.radius + b.attribute.radius) > d
+
 
         player = self.players[0]
         npcs = self.npcs
         if type(o) == NPC:
-            if _check_collision(o, player): player.attribute.hp = 0
+            if _check_collision(o, player):
+                player.attribute.hp = 0
 
         elif type(o) == Player:
             for npc in npcs:

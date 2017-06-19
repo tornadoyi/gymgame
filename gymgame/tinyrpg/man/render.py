@@ -83,10 +83,12 @@ class Render(object):
         # self._plt_map.title.text = "step: #{}".format(current_step)
 
         # note： 如果频率过快， jupyter notebook会受不了
+        self._map = self._game.map
         all_x = [_.attribute.position.x for _ in self._map.players] + [_.attribute.position.x for _ in self._map.npcs]
         all_y = [_.attribute.position.y for _ in self._map.players] + [_.attribute.position.y for _ in self._map.npcs]
         self.rd_loc.data_source.data['x'] = all_x
         self.rd_loc.data_source.data['y'] = all_y
+
 
         # 游戏结束时进行闪动， 表示游戏结束
         # thief_color = "red" if current_is_caught else "yellow"

@@ -16,7 +16,7 @@ class Game(framework.Game):
     def map(self): return self._map
 
 
-    def reset(self):
+    def _reset(self):
         # init all modules
         self._map = self._map_creator()
         self._map.on_game_load(self)
@@ -28,7 +28,7 @@ class Game(framework.Game):
 
 
 
-    def step(self, *actions):
+    def _step(self, *actions):
         # actions: action list with struct (id, type, params...)
 
         # player do
