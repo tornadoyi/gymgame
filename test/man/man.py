@@ -6,14 +6,16 @@ from gymgame.tinyrpg.man import config
 import time
 
 
-def run(with_render=False):
+def run(render=False):
     env = gym.make(config.GAME_NAME)
     env.reset()
 
     while True:
+        if env.env.terminal: env.reset()
         time.sleep(1.0/60)
         env.step([])
-        if with_render: env.render()
+        if render: env.render()
 
 
-run()
+if __name__  == '__main__':
+    run()
