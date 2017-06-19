@@ -83,8 +83,8 @@ class Render(object):
         # self._plt_map.title.text = "step: #{}".format(current_step)
 
         # note： 如果频率过快， jupyter notebook会受不了
-        all_x = [_.position.x for _ in self._map.players] + [_.position.x for _ in self._map.npcs]
-        all_y = [_.position.y for _ in self._map.players] + [_.position.y for _ in self._map.npcs]
+        all_x = [_.attributes.position.x for _ in self.map.players] + [_.attributes.position.x for _ in self.map.npcs]
+        all_y = [_.attributes.position.y for _ in self.map.players] + [_.attributes.position.y for _ in self.map.npcs]
         self.rd_loc.data_source.data['x'] = all_x
         self.rd_loc.data_source.data['y'] = all_y
 
