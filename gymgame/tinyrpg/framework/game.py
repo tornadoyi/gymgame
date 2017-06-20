@@ -28,7 +28,7 @@ class Game(framework.Game):
 
 
 
-    def _step(self, *actions):
+    def _step(self, actions):
         # actions: action list with struct (id, type, params...)
 
         # player do

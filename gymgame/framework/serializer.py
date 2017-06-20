@@ -4,10 +4,9 @@ import numpy as np
 from easydict import EasyDict as edict
 
 class _Node(object):
-    def __init__(self, path, start_pos, end_pos):
+    def __init__(self, path, parent=None):
         self._path = path
-        self._start_pos = start_pos
-        self._end_pos = end_pos
+        self._parent = parent
 
     @property
     def path(self): return self._path
@@ -19,21 +18,35 @@ class _Node(object):
     def name(self): return os.path.basename(self._path)
 
     @property
-    def start_pos(self): return self._start_pos
+    def parent(self): return self._parent
+
+
+
+class _Structure(_Node):
+    def __init__(self, *args, **kwargs):
+        super(_Structure, self).__init__(*args, **kwargs)
+        self._nodes = []
+
 
     @property
-    def end_pos(self): return self._end_pos
+    def nodes(self): return self._nodes
 
-    @property
-    def size(self): return self._end_pos - self._start_pos
+    def add(self, node): self._nodes.append(node)
+
+
+class _Array(_Structure): pass
 
 
 
 class _Attribute(_Node):
-    def __init__(self, path, start_pos, end_pos, serializer, normalizer):
-        super(_Attribute, self).__init__(path, start_pos, end_pos)
+    def __init__(self, path, parent, serializer, normalizer):
+        super(_Attribute, self).__init__(path, parent)
         self._serializer = serializer
         self._normalizer = normalizer
+
+
+    def serialize(self, *args, **kwargs): return self._serializer(*args, **kwargs)
+
 
     @property
     def normalizer(self): return self._normalizer
@@ -42,128 +55,154 @@ class _Attribute(_Node):
     def serializer(self): return self._serializer
 
 
-class _Repeated(_Node): pass
+
+def _size(v):
+    ndims = len(np.shape(v))
+    assert ndims <= 1
+    return len(v) if ndims == 1 else 1
 
 
 
 class SerializerKernel(object):
+    class _serializer(object):
+        pass
+
+    class _normalizer(object):
+        pass
+
+    class s_type(_serializer):
+        def __init__(self, t): self._t = t
+
+        def __call__(self, v): return np.array(v, self._t)
+
+
+    class s_float64(s_type):
+        def __init__(self): super(SerializerKernel.s_float64, self).__init__(np.float64)
+
+    class s_float32(s_type):
+        def __init__(self): super(SerializerKernel.s_float32, self).__init__(np.float32)
+
+    class n_none(_normalizer):
+        def __call__(self, v, norm): return v
+
+    class _n_tag(_normalizer):
+        def __init__(self, tag): self._tag = tag
+
+        @property
+        def tag(self): return self._tag
+
+        def get(self, norm):
+            v = norm.get(self._tag)
+            if v is None: raise Exception('{0} is not existed in norm'.format(self._tag))
+            return v
+
+    class n_div_tag(_n_tag):
+        def __call__(self, v, norm):
+            n = self.get(norm)
+            assert (n != 0).any()
+            return v / n
+
+    class _n_value(_normalizer):
+        def __init__(self, v): self._v = v
+
+    class n_div(_n_value):
+        def __call__(self, v, norm): return v / self._v
+
+
     def __init__(self, o, path="/"):
-        self._nodes = {}
-        self._serialized_nodes = []
-        self._serialized_size = 0
+        self._root_node = _Structure(path)
+        self._nodes = {self._root_node.path: self._root_node}
 
         # temp
-        self._root = o
-        self._cur_obj = None
-        self._cur_path = path
-        self._path_pos_stack = []
+        self._cur_node = self._root_node
+        self._obj_stack = [o]
 
 
-    @property
-    def serialized_size(self): return self._serialized_size
+    def serialize(self, o, norm, s_dict=None, n_dict=None):
+        def _visit(o, k):
+            v = getattr(o, k)
+            if v is None: raise Exception('{0} is not existed in {1}'.format(k, type(o)))
+            return v
+
+        def _serialize_core(path, o, root, norm, s_dict=None, n_dict=None):
+            serial = np.array([], np.float64)
+            if type(root) == _Structure:
+                for node in root.nodes:
+                    node_path = self.create_path(path, node.name)
+                    s = _serialize_core(node_path, _visit(o, node.name), node, norm, s_dict, n_dict)
+                    serial = np.hstack([serial, s])
+
+            elif type(root) == _Array:
+                for i in range(len(o)):
+                    array_path = self.create_path(path, str(i))
+                    for node in root.nodes:
+                        node_path = self.create_path(array_path, node.name)
+                        s = _serialize_core(node_path, _visit(o[i], node.name), node, norm, s_dict, n_dict)
+                        serial = np.hstack([serial, s])
+
+            elif type(root) == _Attribute:
+                s = root.serializer(o)
+                serial = root.normalizer(s, norm) if norm is not None else s
+
+                # normalize dict
+                if n_dict is not None and isinstance(root.normalizer, SerializerKernel._n_tag):
+                    tag = root.normalizer.tag
+                    if tag not in n_dict: n_dict[tag] = np.abs(s)
+                    else: n_dict[tag] = np.max([np.abs(s), n_dict[tag]], axis=0)
+
+            else: assert False
+
+            # serialize dict
+            if s_dict is not None:
+                assert path not in s_dict
+                s_dict[path] = serial
+
+            return serial
+
+        s = _serialize_core(self._root_node.path, o, self._root_node, norm, s_dict, n_dict)
+        return s
 
 
-    def node(self, path):
-        if path[0] != "/": path = self.create_path("/", path)
-        node = self._nodes.get(path)
-        return node
 
+    def add(self, k, serializer=None, normalizer=None):
+        serializer = serializer or SerializerKernel.s_float64()
+        normalizer = normalizer or SerializerKernel.n_none()
 
-    def slice(self, v, path):
-        if path[0] != "/": path = self.create_path("/", path)
-        node = self._nodes.get(path)
-        if node is None: raise Exception("can not find path {0}".format(path))
-        return v[node.start_pos : node.end_pos]
+        # get value
+        o = self._obj_stack[-1]
+        v = getattr(o, k)
+        if v is None: raise Exception('{0} is not existed in {1}'.format(k, type(o)))
 
-
-
-    def serialize(self, o, norm=None):
-        serial = np.array([], np.float64)
-
-        # serialize
-        for i in range(len(self._serialized_nodes)):
-            attr = self._serialized_nodes[i]
-            v = self.visit(o, attr.path)
-            s = attr.serializer(v, o)
-            serial = np.hstack([serial, s])
-
-        if norm is None: return serial
-
-
-        # normalize
-        assert self._size(serial) == self._size(norm)
-        norm_serial = np.array([], np.float64)
-        for i in range(len(self._serialized_nodes)):
-            attr = self._serialized_nodes[i]
-            s = serial[attr.start_pos: attr.end_pos]
-            n = norm[attr.start_pos: attr.end_pos]
-            ns = attr.normalizer(s, n, o)
-            norm_serial = np.hstack([norm_serial, ns])
-
-        return norm_serial
-
-
-    def add(self, k, serializer = None, normalizer = None):
-        serializer = serializer or self.s_float64
-        normalizer = normalizer or self.n_none
-
-        param_path = self.create_path(self._cur_path, k)
-        rv = self.visit(self._root, param_path)
-        sv = serializer(rv)
-        s_size = self._size(sv)
-
-        # calculate start location
-        st = self._serialized_size
-        self._serialized_size += s_size
-
-        attr = _Attribute(param_path, st, self._serialized_size, serializer, normalizer)
-        self._nodes[param_path] = attr
-        self._serialized_nodes.append(attr)
-
-
-    def adds(self, selector):
-        o = self.visit(self._root, self._cur_path)
-        assert isinstance(o, (list, tuple))
-        for i in range(len(o)):
-            self.enter(i)
-            selector(self)
-            self.exit()
-
-
-    def s_float64(self, v, *args, **kwargs):
-        if self._size(v) == 1: v = [v]
-        v = np.array(v, np.float64)
-        return v
-
-
-    def n_none(self, v, n, *args, **kwargs): return v
-
-
-    def n_division(self, v, n, *args, **kwargs):
-        assert any(n) != 0
-        return v / n
-
-
-    @staticmethod
-    def _size(v):
-        ndims = len(np.shape(v))
-        assert ndims <= 1
-        return len(v) if ndims == 1 else 1
+        # create attribute
+        param_path = self.create_path(self._cur_node.path, k)
+        attr = _Attribute(param_path, self._cur_node, serializer, normalizer)
+        self._cur_node.add(attr)
 
 
     def enter(self, name):
-        self._cur_path = self.create_path(self._cur_path, str(name))
-        self._path_pos_stack.append(self._serialized_size)
+        # get value
+        o = self._obj_stack[-1]
+        v = getattr(o, name)
+        if v is None: raise Exception('{0} is not existed in {1}'.format(name, type(o)))
+
+        # create node
+        path = self.create_path(self._cur_node.path, str(name))
+        node = _Array(path, self._cur_node) if isinstance(v, (tuple, list)) else _Structure(path, self._cur_node)
+        self._cur_node.add(node)
+        self._cur_node = node
+
+        # auto enter element when v is list or tuple
+        if isinstance(v, (tuple, list)):
+            if len(v) == 0: raise Exception('array {0} in {1} is empty, can not detect innner structure'.format(name, type(o)))
+            v = v[0]
+
+        # record obj
+        self._obj_stack.append(v)
 
 
     def exit(self):
-        self._cur_path = os.path.dirname(self._cur_path)
-        if hasattr(self._nodes, self._cur_path): return
-        o = self.visit(self._root, self._cur_path)
-        st = self._path_pos_stack.pop()
-        ed = self._serialized_size
-        cls = _Repeated if isinstance(o, (tuple, list)) else _Node
-        self._nodes[self._cur_path] = cls(self._cur_path, st, ed)
+        self._cur_node = self._cur_node.parent
+        self._obj_stack.pop()
 
 
     def visit(self, o, path):
@@ -175,7 +214,6 @@ class SerializerKernel(object):
             else:
                 o = getattr(o, p)
         return o
-
 
     def create_path(self, *args): return os.path.join(*args).replace("\\", "/")
 
@@ -195,17 +233,12 @@ class Serializer(object):
     def num_state(self): return self._num_state
 
     # virtual
-    def _gen_normalized_data(self, v, *args): raise NotImplementedError("_gen_normalized_data should be implemented")
-
     def _select(self, k, *args): raise NotImplementedError("_select should be implemented")
+
+    def _deserialize_action(self, data): raise NotImplementedError("deserialize_action should be implemented")
 
 
     def state_shape(self, index=0): return self._state_shapes[index]
-
-    #def serialize_action(self, action): raise NotImplementedError("serialize_action should be implemented")
-
-    def deserialize_action(self, data): raise NotImplementedError("deserialize_action should be implemented")
-
 
     def on_start(self, game):
         # reset game
@@ -217,7 +250,7 @@ class Serializer(object):
 
         # create normalized vector
         states = self.serialize_state(game)
-        self._norm = self._gen_normalized_data(states, game)
+        self._norm = self._gen_normalized_data(game)
 
 
         # get num state
@@ -231,11 +264,23 @@ class Serializer(object):
 
     def on_reset(self, game):
         states = self.serialize_state(game)
-        self._norm = self._gen_normalized_data(states, game)
+        self._norm = self._gen_normalized_data(game)
 
 
     def serialize_state(self, game): return self._kernel.serialize(game, self._norm)
 
+    def serialize_state_to_dict(self, game):
+        s_dict = {}
+        self._kernel.serialize(game, self._norm, s_dict)
+        return s_dict
+
+
+    def deserialize_action(self, data): return self._deserialize_action(data)
+
+    def _gen_normalized_data(self, game):
+        n_dict = {}
+        self._kernel.serialize(game, self._norm, None, n_dict)
+        return n_dict
 
 
 

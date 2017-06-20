@@ -58,7 +58,7 @@ def gen_npcs():
             direct=direct,
             speed=1.0,
             radius=NPC_RADIUS,
-            hp=15
+            hp=1
         )
 
         npcs.append(npc)

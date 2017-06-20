@@ -1,3 +1,4 @@
+from gymgame.engine import extension
 from .. import framework
 from ..framework import Character, NPC, Player
 from . import config
@@ -12,36 +13,36 @@ class Map(framework.Map):
             d = a.attribute.position.distance(b.attribute.position)
             return (a.attribute.radius + b.attribute.radius) > d
 
-
-        player = self.players[0]
         npcs = self.npcs
         if type(o) == NPC:
-            if _check_collision(o, player):
-                player.attribute.hp = 0
+            npc = o
+            for player in self.players:
+                if player.attribute.hp < 1e-6: continue
+                if not _check_collision(npc, player): continue
+                player.attribute.hp -= npc.attribute.hp
+                break
 
         elif type(o) == Player:
+            player = o
             for npc in npcs:
                 if not _check_collision(npc, player): continue
-                o.attribute.hp = 0
-                break
+                player.attribute.hp -= npc.attribute.hp
 
         else: raise Exception("invalid object type {0}".format(type(o)))
 
 
+    def _on_npc_dead(self, npc):
+        pass
+
+
+@extension(NPC)
 class NPCExtension(object):
-    @staticmethod
     def move_toward(self, direct): self._map.move_toward(self.attribute.id, direct, bounds_limit=False)
 
-    @staticmethod
     def move_to(self, position): self._map.move_to(self.attribute.id, position, bounds_limit=False)
 
-    @staticmethod
     def _update(self): self.move_toward(self.attribute.direct)
 
-
-NPC._update = NPCExtension._update
-NPC.move_toward = NPCExtension.move_toward
-NPC.move_to = NPCExtension.move_to
 
 
 class Game(framework.Game):
