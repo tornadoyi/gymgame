@@ -16,9 +16,8 @@ class EnvironmentGym(framework.EnvironmentGym):
 
     def _init_action_space(self): return spaces.Discrete(1)
 
-    def _reward(self):
-        return 0
-
+    def _reward(self): return 0
+        
     def _close(self, *args, **kwargs): pass
 
     def _render(self, *args, **kwargs):

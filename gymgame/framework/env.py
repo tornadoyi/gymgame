@@ -96,6 +96,8 @@ class EnvironmentGym(Environment, gym.Env):
 
     def _reward(self): raise NotImplementedError("_reward should be implemented")
 
+    def _info(self): return None
+
     def reset(self): return gym.Env.reset(self)
 
     def step(self, action): return gym.Env.step(self, action)
@@ -117,8 +119,9 @@ class EnvironmentGym(Environment, gym.Env):
         s = self.state
         r = self._reward()
         t = self.terminal
+        i = self._info()
         self._rewards.append(r)
-        return s, r, t, None
+        return s, r, t, i
 
 
 
