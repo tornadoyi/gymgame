@@ -5,7 +5,9 @@ def extension(cls):
     def decorate_extension(ext_cls):
         dict = ext_cls.__dict__
         for k, v in dict.items():
-            if type(v) is not types.MethodType and type(v) is not types.FunctionType:
+            if type(v) is not types.MethodType and \
+                type(v) is not types.FunctionType and \
+                type(v) is not property:
                 continue
             setattr(cls, k, v)
         return ext_cls

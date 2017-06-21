@@ -10,6 +10,7 @@ class Map(Event):
         super(Map, self).__init__()
         self._bounds = Bounds2(Vector2(*center), Vector2(*size))
         self._object_dict = {}
+        self._order_object_ids = []
         self._game = None
 
     @property
@@ -19,10 +20,10 @@ class Map(Event):
     def game(self): return self._game
 
     @property
-    def players(self): return self.finds(Player)
+    def players(self): return self._order_by_id(self.finds(Player))
 
     @property
-    def npcs(self): return self.finds(NPC)
+    def npcs(self): return self._order_by_id(self.finds(NPC))
 
     # events
     def on_game_load(self, game): self._game = game
@@ -31,10 +32,11 @@ class Map(Event):
 
 
     def add(self, o, position=None):
-        self._object_dict[o.id] = o
+        self._object_dict[o.attribute.id] = o
         if position is not None: o.attribute.position = position
         o.attribute.direct = o.attribute.direct.normalized
         o.enter_map(self)
+        if o.attribute.id not in self._order_object_ids: self._order_object_ids.append(o.attribute.id)
 
 
     def remove(self, id):
@@ -74,10 +76,10 @@ class Map(Event):
         tgt_pos = o.attribute.position + direct.normalized * distance
 
         # check out of bound
-        if bounds_limit and not self.bounds.contains(o.atrribute.position):
-            point = g2d.raycast(o.atrribute.position, direct, distance, self.bounds)
+        if bounds_limit and not self.bounds.contains(o.attribute.position):
+            point = g2d.raycast(o.attribute.position, direct, distance, self.bounds)
             assert point is not None
-            tgt_pos = point
+            tgt_pos = o.attribute.position
 
 
         # set attribute
@@ -85,5 +87,16 @@ class Map(Event):
         o.attribute.direct = direct.normalized
         self._on_move(o)
 
+        if type(o) is Player: print(o.attribute.position)
+
 
     def in_bounds(self, position): return self._bounds.contains(position)
+
+
+    def _order_by_id(self, objs):
+        order_objs = []
+        obj_ids = [o.attribute.id for o in objs]
+        for id in self._order_object_ids:
+            if id not in obj_ids: continue
+            order_objs.append(self.find(id))
+        return order_objs

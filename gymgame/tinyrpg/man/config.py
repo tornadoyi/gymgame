@@ -8,19 +8,17 @@ MAP_SIZE = Vector2(10, 10)
 
 MAP_BOUND = Bounds2(MAP_CENTER, MAP_SIZE)
 
-NUM_NPC = 30
-
-PLAYER_RADIUS = 0.5
-
-NPC_RADIUS = 0.3
 
 PLAYER_IDS = ["player-0"]
+PLAYER_RADIUS = 0.5
 
+
+NUM_NPC = 30
+NPC_RADIUS = 0.3
 SHAKE_ANGLE = 30
 
+
 _last_players = None
-
-
 
 
 def gen_players():
@@ -30,7 +28,7 @@ def gen_players():
             id = PLAYER_IDS[0],
             position = Vector2(0, 0),
             direct = Vector2(0, 0),
-            speed = 2.0,
+            speed = 10.0,
             radius = PLAYER_RADIUS,
             hp = 15
         )

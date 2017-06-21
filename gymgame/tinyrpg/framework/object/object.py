@@ -47,7 +47,7 @@ class Object(Event):
 
     def idle(self): pass
 
-    def move_toward(self, direct): self._map.move_toward(self.attribute.id, direct)
+    def move_toward(self, direct, speed=None): self._map.move_toward(self.attribute.id, direct)
 
     def move_to(self, position): self._map.move_to(self.attribute.id, position)
 

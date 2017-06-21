@@ -23,7 +23,7 @@ class Line2(Line):
         # F(x) = ax + by + c = 0
         a = self.start.y - self.end.y
         b = self.end.x - self.start.x
-        c = self.start.x * self.end.y - self.end.x * self.start.x
+        c = self.start.x * self.end.y - self.end.x * self.start.y
         return np.array([a, b, c])
 
 

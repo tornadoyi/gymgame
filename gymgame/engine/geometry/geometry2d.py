@@ -1,13 +1,14 @@
 from ..base import *
 
 def raycast(origin, direct, distance, objs):
+    objs = objs if isinstance(objs, (list, tuple)) else [objs]
     ray = Line2(origin, origin + direct.normalized * distance)
 
     min_cross_point = None
     min_cross_distance = np.inf
 
     def _update(point):
-        global min_cross_point, min_cross_distance
+        nonlocal min_cross_point, min_cross_distance
         if point is None: return
         d = point.distance(origin)
         if d >= min_cross_distance: return
@@ -15,10 +16,12 @@ def raycast(origin, direct, distance, objs):
         min_cross_distance = d
 
     def _raycast_to_line(o):
+        nonlocal min_cross_point, min_cross_distance
         point = ray.cross_point(o)
         _update(point)
 
     def _raycast_to_bounds(o):
+        nonlocal min_cross_point, min_cross_distance
         min, max = o.min, o.max
         lines = [
             Line2(min, Vector2(min.x, max.y)),
