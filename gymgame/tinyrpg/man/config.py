@@ -28,9 +28,9 @@ def gen_players():
             id = PLAYER_IDS[0],
             position = Vector2(0, 0),
             direct = Vector2(0, 0),
-            speed = 10.0,
+            speed = 5.0,
             radius = PLAYER_RADIUS,
-            hp = 15
+            hp = 1
         )
     ]
     return _last_players
@@ -60,7 +60,7 @@ def gen_npcs():
             id="npc-{0}".format(i),
             position=position,
             direct=direct,
-            speed=1.0,
+            speed=3.0,
             radius=NPC_RADIUS,
             hp=1
         )

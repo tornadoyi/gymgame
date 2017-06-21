@@ -12,7 +12,7 @@ from .render import Render
 class EnvironmentGym(framework.EnvironmentGym):
     def __init__(self, *args, **kwargs):
         super(EnvironmentGym, self).__init__(*args, **kwargs)
-        self._window = Render(self)
+        self._window = None
 
     def _init_action_space(self): return spaces.Discrete(1)
 
@@ -21,8 +21,10 @@ class EnvironmentGym(framework.EnvironmentGym):
     def _close(self, *args, **kwargs): pass
 
     def _render(self, *args, **kwargs):
-        if not hasattr(self, '_window'): return
-        self._window.update()
+        if self._window is None:
+            self._window = Render(self)
+        else:
+            self._window.update()
 
 
 

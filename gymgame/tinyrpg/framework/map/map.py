@@ -76,7 +76,7 @@ class Map(Event):
         tgt_pos = o.attribute.position + direct.normalized * distance
 
         # check out of bound
-        if bounds_limit and not self.bounds.contains(o.attribute.position):
+        if bounds_limit and not self.bounds.contains(tgt_pos):
             point = g2d.raycast(o.attribute.position, direct, distance, self.bounds)
             assert point is not None
             tgt_pos = o.attribute.position
@@ -86,8 +86,6 @@ class Map(Event):
         o.attribute.position = tgt_pos
         o.attribute.direct = direct.normalized
         self._on_move(o)
-
-        if type(o) is Player: print(o.attribute.position)
 
 
     def in_bounds(self, position): return self._bounds.contains(position)

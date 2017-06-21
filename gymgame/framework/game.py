@@ -25,6 +25,12 @@ class Game(object):
     @property
     def delta_time(self): return 1.0 / _FPS * self._speed_scale
 
+    @property
+    def speed_scale(self): return self._speed_scale
+
+    @speed_scale.setter
+    def speed_scale(self, v): self._speed_scale = v
+
 
     # virtual methods
     def _reset(self, *args, **kwargs): raise NotImplementedError("_reset should be implemented")
