@@ -20,6 +20,7 @@ class Map(framework.Map):
                 if player.attribute.hp < 1e-6: continue
                 if not _check_collision(npc, player): continue
                 player.attribute.hp -= npc.attribute.hp
+                npc.attribute.hp = 0
                 break
 
         elif type(o) == Player:
@@ -27,12 +28,10 @@ class Map(framework.Map):
             for npc in npcs:
                 if not _check_collision(npc, player): continue
                 player.attribute.hp -= npc.attribute.hp
+                npc.attribute.hp = 0
 
         else: raise Exception("invalid object type {0}".format(type(o)))
 
-
-    def _on_npc_dead(self, npc):
-        pass
 
 
 @extension(NPC)
@@ -41,7 +40,10 @@ class NPCExtension(object):
 
     def move_to(self, position): self._map.move_to(self.attribute.id, position, bounds_limit=False)
 
-    def _update(self): self.move_toward(self.attribute.direct)
+    def _update(self):
+        self.move_toward(self.attribute.direct)
+        if self.attribute.hp < 1e-6 or not self._map.in_bounds(self.attribute.position):
+            self._map.remove(self.attribute.id)
 
 
 
@@ -49,7 +51,7 @@ class Game(framework.Game):
 
     def _check_terminal(self):
         players = self._map.finds(Player)
-        return players[0].attribute.hp < 1e-6
+        return players[0].attribute.hp < 1e-6 or len(self.map.npcs) == 0
 
 
 

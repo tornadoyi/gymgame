@@ -8,7 +8,7 @@ MAP_SIZE = Vector2(10, 10)
 
 MAP_BOUND = Bounds2(MAP_CENTER, MAP_SIZE)
 
-NUM_NPC = 1
+NUM_NPC = 30
 
 PLAYER_RADIUS = 0.5
 
@@ -16,8 +16,12 @@ NPC_RADIUS = 0.3
 
 PLAYER_IDS = ["player-0"]
 
+SHAKE_ANGLE = 30
 
 _last_players = None
+
+
+
 
 def gen_players():
     global _last_players
@@ -37,7 +41,7 @@ def gen_players():
 
 def gen_npcs():
     npcs = []
-    rmin = (PLAYER_RADIUS + NPC_RADIUS) * 2
+    rmin = MAP_SIZE.x / 4
     rmax = MAP_SIZE.x / 2
 
     player = _last_players[0]
@@ -51,6 +55,8 @@ def gen_npcs():
 
         # direct
         direct = player.position - position
+        angle = np.random.uniform(-SHAKE_ANGLE, SHAKE_ANGLE)
+        direct = direct.rotate(angle)
 
         npc = edict(
             id="npc-{0}".format(i),

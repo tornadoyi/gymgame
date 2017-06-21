@@ -92,7 +92,7 @@ class SerializerKernel(object):
         def tag(self): return self._tag
 
         def get(self, norm):
-            v = norm.get(self._tag)
+            v = norm.tag.get(self._tag)
             if v is None: raise Exception('{0} is not existed in norm'.format(self._tag))
             return v
 
@@ -263,7 +263,6 @@ class Serializer(object):
 
 
     def on_reset(self, game):
-        states = self.serialize_state(game)
         self._norm = self._gen_normalized_data(game)
 
 
@@ -278,9 +277,12 @@ class Serializer(object):
     def deserialize_action(self, data): return self._deserialize_action(data)
 
     def _gen_normalized_data(self, game):
-        n_dict = {}
-        self._kernel.serialize(game, self._norm, None, n_dict)
-        return n_dict
+        # gen normalized tag
+        tag_dict = {}
+        self._kernel.serialize(game, self._norm, None, tag_dict)
+
+        norm = edict(tag=tag_dict, game=game)
+        return norm
 
 
 

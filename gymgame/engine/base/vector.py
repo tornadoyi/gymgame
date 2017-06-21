@@ -50,6 +50,12 @@ class Vector2(Vector):
     @property
     def y(self): return self[1]
 
+    def rotate(self, angle):
+        r = math.radians(angle)
+        x, y = self.x, self.y
+        return Vector2(np.cos(r) * x + np.sin(r) * y, -np.sin(r) * x + np.cos(r) * y)
+
+
 
 Vector2.down = Vector2(0, -1)
 Vector2.left = Vector2(-1, 0)
