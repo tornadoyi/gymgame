@@ -22,6 +22,7 @@ class Render(object):
         self._env = env
         self._game = env.game
         self._map = self._game.map
+        self.global_running_r = []
 
         # create figure
         bounds = self._map.bounds
@@ -55,14 +56,14 @@ class Render(object):
             fill_color=["green"] * self.player_num + ["firebrick"] * self.npc_num,
             fill_alpha=0.6)
 
-        # 显示reward趋势
+        # show reward trend
         plt_reward = figure(
             plot_width=400, plot_height=400, title="running ep reward: ")
         plt_reward.title.align = "center"
         plt_reward.title.text_color = "green"
         plt_reward.title.text_font_size = "20px"
         plt_reward.title.background_fill_color = "black"
-        self.plt_reward = plt_reward  # 用于后续更新标题中的reward值
+        self.plt_reward = plt_reward  # used for update reward in title
         self.rd_reward = plt_reward.line(
             [1], [0], line_width=2)
 
@@ -97,9 +98,18 @@ class Render(object):
         # thief_lw = 3 if current_is_caught else 1
         # self.rd_loc.data_source.data['line_width'] = [10] * self.player_num + [thief_lw] * self.npc_num
 
-        # self.rd_reward.data_source.data['x'] = range(len(reward))
-        # self.rd_reward.data_source.data['y'] = reward
-        # self.plt_reward.title.text = "episode #{} / last_ep_reward: {:5.1f}".format(
-        #     episode_count, reward[-1] if reward else 0)
-        push_notebook()  # self.nb_handle
+        # update training performance after each episode
+        if self._game.terminal:
+            ep_reward = sum(self._game.rewards)
+            ep_count = len(ep_reward)
+            if len(self.global_running_r) == 0:  # record running episode reward
+                self.global_running_r.append(ep_reward)
+            else:
+                self.global_running_r.append(0.99 * self.global_running_r[-1] + 0.01 * ep_reward)
 
+            self.rd_reward.data_source.data['x'] = range(ep_count)
+            self.rd_reward.data_source.data['y'] = self.global_running_r
+            self.plt_reward.title.text = "episode #{} / last_ep_reward: {:5.1f}".format(
+                ep_count, self.global_running_r[-1])
+
+        push_notebook()  # self.nb_handle
