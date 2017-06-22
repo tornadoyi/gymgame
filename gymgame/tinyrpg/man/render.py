@@ -31,7 +31,7 @@ class Render(object):
         self._plt_map = figure(
             plot_width=600,
             plot_height=600,
-            toolbar_location=None,
+            # toolbar_location=None,
             x_range=(int(bounds.min.x), int(bounds.max.x)),
             y_range=(int(bounds.min.y), int(bounds.max.y)),
             # x_range=(min_screen_x - 1, max_screen_x + 1),
