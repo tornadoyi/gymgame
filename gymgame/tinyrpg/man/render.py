@@ -5,7 +5,6 @@ from bokeh.layouts import gridplot
 import numpy as np
 import random
 import time
-from .config import PLAYER_RADIUS, NPC_RADIUS
 
 # ! only used to temporarily shutdown bokeh warning !
 import warnings
