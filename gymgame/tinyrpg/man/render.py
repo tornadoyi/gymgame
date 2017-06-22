@@ -100,8 +100,8 @@ class Render(object):
 
         # update training performance after each episode
         if self._game.terminal:
-            ep_reward = sum(self._game.rewards)
-            ep_count = len(ep_reward)
+            ep_reward = sum(self._env.rewards)
+            ep_count = len(self.global_running_r)
             if len(self.global_running_r) == 0:  # record running episode reward
                 self.global_running_r.append(ep_reward)
             else:
