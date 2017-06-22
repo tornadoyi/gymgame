@@ -18,7 +18,7 @@ class EnvironmentGym(framework.EnvironmentGym):
 
     def _reward(self): return 0
 
-    def _close(self, *args, **kwargs): pass
+    def close(self, *args, **kwargs): pass  # close will trigger render(don't need it in many case)
 
     def _render(self, *args, **kwargs):
         if self._window is None:
