@@ -5,6 +5,7 @@ _FPS = 60
 class Game(object):
     def __init__(self, speed_scale=1.0):
         self._speed_scale = speed_scale
+        self._total_resets = 0
         self._total_steps = 0
 
 
@@ -12,6 +13,9 @@ class Game(object):
         self._terminal = None
         self._steps = 0
 
+
+    @property
+    def total_resets(self): return self._total_resets
 
     @property
     def total_steps(self): return self._total_steps
@@ -45,6 +49,7 @@ class Game(object):
 
 
     def reset(self, *args, **kwargs):
+        self._total_resets += 1
         self._steps = 0
         self._terminal = False
         self._reset()

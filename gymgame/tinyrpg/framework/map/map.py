@@ -1,6 +1,8 @@
 from types import FunctionType, MethodType
 from gymgame.engine import Vector2, Bounds2, Event, geometry2d as g2d
 from ..object import *
+from collections import OrderedDict
+
 
 # Events:
 #   on_move(map, obj)
@@ -9,8 +11,7 @@ class Map(Event):
     def __init__(self, center, size):
         super(Map, self).__init__()
         self._bounds = Bounds2(Vector2(*center), Vector2(*size))
-        self._object_dict = {}
-        self._order_object_ids = []
+        self._object_dict = OrderedDict()
         self._game = None
 
     @property
@@ -20,10 +21,10 @@ class Map(Event):
     def game(self): return self._game
 
     @property
-    def players(self): return self._order_by_id(self.finds(Player))
+    def players(self): return [o for _, o in self._object_dict.items() if isinstance(o, Player)]
 
     @property
-    def npcs(self): return self._order_by_id(self.finds(NPC))
+    def npcs(self): return [o for _, o in self._object_dict.items() if isinstance(o, NPC)]
 
     # events
     def on_game_load(self, game): self._game = game
@@ -36,7 +37,6 @@ class Map(Event):
         if position is not None: o.attribute.position = position
         o.attribute.direct = o.attribute.direct.normalized
         o.enter_map(self)
-        if o.attribute.id not in self._order_object_ids: self._order_object_ids.append(o.attribute.id)
 
 
     def remove(self, id):
@@ -89,12 +89,3 @@ class Map(Event):
 
 
     def in_bounds(self, position): return self._bounds.contains(position)
-
-
-    def _order_by_id(self, objs):
-        order_objs = []
-        obj_ids = [o.attribute.id for o in objs]
-        for id in self._order_object_ids:
-            if id not in obj_ids: continue
-            order_objs.append(self.find(id))
-        return order_objs

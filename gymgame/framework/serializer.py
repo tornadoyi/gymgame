@@ -7,15 +7,17 @@ class _Node(object):
     def __init__(self, path, parent=None):
         self._path = path
         self._parent = parent
+        self._dir = os.path.dirname(self._path)
+        self._name = os.path.basename(self._path)
 
     @property
     def path(self): return self._path
 
     @property
-    def dir(self): return os.path.dirname(self._path)
+    def dir(self): return self._dir
 
     @property
-    def name(self): return os.path.basename(self._path)
+    def name(self): return self._name
 
     @property
     def parent(self): return self._parent
@@ -215,7 +217,7 @@ class SerializerKernel(object):
                 o = getattr(o, p)
         return o
 
-    def create_path(self, *args): return os.path.join(*args).replace("\\", "/")
+    def create_path(self, path, p):  return "{0}/{1}".format(path, p) if path != "/" else "{0}{1}".format(path, p)  #"#return os.path.join(*args).replace("\\", "/")
 
 
 class Serializer(object):
