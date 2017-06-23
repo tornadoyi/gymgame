@@ -3,7 +3,8 @@
 _FPS = 60
 
 class Game(object):
-    def __init__(self, speed_scale=1.0):
+    def __init__(self, fps = 60, speed_scale=1.0):
+        self._fps = fps
         self._speed_scale = speed_scale
         self._total_resets = 0
         self._total_steps = 0
@@ -27,13 +28,19 @@ class Game(object):
     def terminal(self): return self._terminal
 
     @property
-    def delta_time(self): return 1.0 / _FPS * self._speed_scale
+    def delta_time(self): return 1.0 / self._fps * self._speed_scale
 
     @property
     def speed_scale(self): return self._speed_scale
 
     @speed_scale.setter
     def speed_scale(self, v): self._speed_scale = v
+
+    @property
+    def fps(self): return self._fps
+
+    @fps.setter
+    def fps(self, v): self._fps = v
 
 
     # virtual methods
