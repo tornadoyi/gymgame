@@ -16,7 +16,7 @@ class Vector(np.ndarray):
 
     @property
     def normalized(self):
-        if all(self) == 0:
+        if np.all(self == 0):
             return self
         else:
             return self / self.magnitude
