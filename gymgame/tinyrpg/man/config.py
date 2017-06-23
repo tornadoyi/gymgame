@@ -7,6 +7,7 @@ GAME_NAME = "tiny-rpg-man-v0"
 MAP_CENTER = Vector2(0, 0)
 MAP_SIZE = Vector2(10, 10)
 
+GAME_PARAMS = edict()
 
 NUM_PLAYERS = 1
 

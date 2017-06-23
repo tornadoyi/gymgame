@@ -98,5 +98,6 @@ def make():
     return Game(
         lambda : Map(),
         lambda : [Player(data) for data in config.gen_players()],
-        lambda: [NPC(data) for data in config.gen_npcs()]
+        lambda: [NPC(data) for data in config.gen_npcs()],
+        **config.GAME_PARAMS
     )

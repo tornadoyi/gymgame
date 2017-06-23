@@ -4,8 +4,8 @@ from .object import NPC
 
 
 class Game(framework.Game):
-    def __init__(self, map_creator, player_creator, npc_creator):
-        super(Game, self).__init__()
+    def __init__(self, map_creator, player_creator, npc_creator, *args, **kwargs):
+        super(Game, self).__init__(*args, **kwargs)
         self._map_creator = map_creator
         self._player_creator = player_creator
         self._npc_creator = npc_creator
