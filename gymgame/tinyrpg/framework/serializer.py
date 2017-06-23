@@ -30,7 +30,7 @@ class Serializer(framework.Serializer):
 
 
     def _select_object(self, k):
-        k.add(Attr.position, None, lambda v, norm: v / norm.game.map.bounds.size)
+        k.add(Attr.position, None, lambda v, norm: v / norm.game.map.bounds.size * 2)
         k.add(Attr.direct, None, k.n_none())
         k.add(Attr.speed, None, k.n_div_tag(Attr.speed))
         k.add(Attr.radius, None, k.n_div_tag(Attr.radius))
