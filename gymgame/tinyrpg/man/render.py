@@ -25,14 +25,17 @@ class Render(object):
 
         # create figure
         bounds = self._map.bounds
+        _x_min, _x_max = int(bounds.min.x), int(bounds.max.x)
+        _y_min, _y_max = int(bounds.min.y), int(bounds.max.y)
 
         output_notebook()
+
         self._plt_map = figure(
             plot_width=600,
             plot_height=600,
             # toolbar_location=None,
-            x_range=(int(bounds.min.x), int(bounds.max.x)),
-            y_range=(int(bounds.min.y), int(bounds.max.y)),
+            x_range=(_x_min * 1.1, _x_max * 1.1),
+            y_range=(_y_min * 1.1, _y_max * 1.1),
             # x_range=(min_screen_x - 1, max_screen_x + 1),
             # y_range=(max_screen_y + 1, min_screen_y - 1),
             x_axis_location="above",
@@ -44,9 +47,14 @@ class Render(object):
         self._plt_map.title.text_font_size = "25px"
         self._plt_map.title.background_fill_color = "blue"
 
+        # draw edge
+        self._plt_map.line(x=[_x_min, _x_max, _x_max, _x_min, _x_min], y=[_y_min, _y_min, _y_max, _y_max, _y_min],
+                           line_color="navy", line_alpha=0.3, line_dash="dotted", line_width=2)
+
         self.player_num, self.npc_num = len(self._map.players), len(self._map.npcs)
         self.total_num = self.player_num + self.npc_num
 
+        # draw balls
         self.rd_loc = self._plt_map.circle(
             [-1] * self.total_num, [-1] * self.total_num,
             radius=[_.attribute.radius for _ in self._map.players] + [_.attribute.radius for _ in self._map.npcs],
