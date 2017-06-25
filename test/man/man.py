@@ -1,9 +1,9 @@
 
 
-
+import time
 import gym
 from gymgame.tinyrpg.man import config
-import time
+
 
 
 def run(render=False):

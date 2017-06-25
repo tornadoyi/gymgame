@@ -5,7 +5,7 @@ Attr = config.Attr
 
 class Serializer(framework.Serializer):
 
-    def _deserialize_action(self, data): []
+    def _deserialize_action(self, data): return []
 
 
     def _select_character(self, k):

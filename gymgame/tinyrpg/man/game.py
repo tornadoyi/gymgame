@@ -9,32 +9,6 @@ class Map(framework.Map):
     def __init__(self):
         super(Map, self).__init__(config.MAP_CENTER, config.MAP_SIZE)
 
-    '''
-    def _on_move(self, o):
-        def _check_collision(a, b):
-            d = a.attribute.position.distance(b.attribute.position)
-            return (a.attribute.radius + b.attribute.radius) > d
-
-
-        if type(o) == NPC:
-            npc = o
-            for player in self.players:
-                if player.attribute.hp < 1e-6: continue
-                if not _check_collision(npc, player): continue
-                player.attribute.hp -= npc.attribute.hp
-                npc.attribute.hp = 0
-                break
-
-        elif type(o) == Player:
-            player = o
-            for npc in self.npcs:
-                if not _check_collision(npc, player): continue
-                player.attribute.hp -= npc.attribute.hp
-                npc.attribute.hp = 0
-
-        else: raise Exception("invalid object type {0}".format(type(o)))
-    '''
-
 
 
 @extension(NPC)
@@ -62,6 +36,7 @@ class Game(framework.Game):
         # objects
         npcs = self.map.npcs
         players = self.map.players
+        if len(npcs) == 0 or len(players) == 0: return
 
         # position
         npcs_pos = np.array([npc.attribute.position for npc in npcs])

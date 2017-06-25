@@ -1,18 +1,18 @@
 from types import FunctionType, MethodType
-from gymgame.engine import Vector2, Bounds2, Event, geometry2d as g2d
-from ..object import *
+from gymgame.engine import Vector2, Bounds2, geometry2d as g2d
+from ..object import Player, NPC
 from collections import OrderedDict
 
 
 # Events:
 #   on_move(map, obj)
 
-class Map(Event):
+class Map(object):
     def __init__(self, center, size):
-        super(Map, self).__init__()
         self._bounds = Bounds2(Vector2(*center), Vector2(*size))
         self._object_dict = OrderedDict()
         self._game = None
+
 
     @property
     def bounds(self): return self._bounds
@@ -29,7 +29,8 @@ class Map(Event):
     # events
     def on_game_load(self, game): self._game = game
 
-    def _on_move(self, o): self.send_event('on_move', self, o)
+
+    def _on_move(self, o): pass
 
 
     def add(self, o, position=None):
