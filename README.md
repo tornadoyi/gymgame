@@ -18,15 +18,15 @@
 Run the game
 ```python
     import gym
-	from gymgame.tinyrpg.man import config
-	
+    from gymgame.tinyrpg.man import config
+
 	env = gym.make(config.GAME_NAME)
     env.reset()
 	
-	while True:
-		if env.env.terminal: env.reset()
-		env.step([])
-		if render: env.render()
+    while True:
+        if env.env.terminal: env.reset()
+        env.step([])
+        if render: env.render()
 ```
 
 
