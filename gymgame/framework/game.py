@@ -1,6 +1,5 @@
 
 
-_FPS = 60
 
 class Game(object):
     def __init__(self, fps = 60, speed_scale=1.0):
@@ -13,6 +12,7 @@ class Game(object):
         # runtime
         self._terminal = None
         self._steps = 0
+        self._time = 0
 
 
     @property
@@ -26,6 +26,9 @@ class Game(object):
 
     @property
     def terminal(self): return self._terminal
+
+    @property
+    def time(self): return self._time
 
     @property
     def delta_time(self): return 1.0 / self._fps * self._speed_scale
@@ -58,12 +61,14 @@ class Game(object):
     def reset(self, *args, **kwargs):
         self._total_resets += 1
         self._steps = 0
+        self._time = 0
         self._terminal = False
         self._reset()
 
 
     def step(self, *args, **kwargs):
         if self._terminal == True: raise Exception("can not call step when game has been over")
+        self._time += self.delta_time
         self._step(*args, **kwargs)
         self._terminal = self._check_terminal()
         self._steps += 1

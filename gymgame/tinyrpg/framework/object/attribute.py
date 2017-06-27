@@ -1,15 +1,10 @@
+import types
 import numpy as np
 
-
 class Attribute(object):
-    def __init__(self, name, init_required=False, base=None, range=None):
+    def __init__(self, name, base):
         self._name = name
-        self._init_required = init_required
         self._base = base
-        self._range = range
-        self._plus_dict = {}
-        self._base = self._clip(self._base)
-
 
     def __str__(self): return self.__repr__()
 
@@ -19,40 +14,80 @@ class Attribute(object):
     def name(self): return self._name
 
     @property
-    def init_required(self): return self._init_required
+    def value(self): return self._base
+
+    @value.setter
+    def value(self, v): self._base = v
+
+
+
+class StaticAttribute(Attribute):
+    @property
+    def value(self): return self._base
+
+
+    @value.setter
+    def value(self, v): raise Exception('{0} can not set value'.format(type(self)))
+
+
+
+class ValueAttribute(Attribute):
+    def __init__(self, name, base, range=None):
+        super(ValueAttribute, self).__init__(name, base)
+        self._range = range
+        self._base = self._clip(self._base)
+
 
     @property
-    def base(self):
-        return self._base
-
-    @base.setter
-    def base(self, v):
-        self._base = v
-
-    @property
-    def range(self):
-        return self._range
-
-    @property
-    def value(self):
-        sum = self._base
-        for id, v in self._plus_dict.items():
-            sum += v
-        return self._clip(sum)
+    def value(self): return self._base
 
 
-    def add_plus(self, id, value): self._plus_dict[id] = value
-
-
-    def del_plus(self, id): return self._plus_dict.pop(id, None)
+    @value.setter
+    def value(self, v): self._base = self._clip(v)
 
 
     def _clip(self, v):
         if self._range is None: return v
         min, max = self._range
+        min = min() if isinstance(min, (types.FunctionType, types.MethodType)) else min
+        max = max() if isinstance(max, (types.FunctionType, types.MethodType)) else max
         if min is not None and v < min: return min
         if max is not None and v > max: return max
         return v
+
+
+
+class PlusAttribute(ValueAttribute):
+    def __init__(self, *args, **kwargs):
+        super(PlusAttribute, self).__init__(*args, **kwargs)
+        self._plus_dict = {}
+        self._value = self._base
+        self._dirty = False
+
+
+    @property
+    def value(self):
+        if not self._dirty: return self._value
+        sum = self._base
+        for name, v in self._plus_dict.items(): sum += v
+        self._value = self._clip(sum)
+        self._dirty = False
+        return self._value
+
+
+    @value.setter
+    def value(self, v): raise Exception('{0} can not set value directly'.format(type(self)))
+
+
+    def add_plus(self, name, value):
+        self._plus_dict[name] = value
+        self._dirty = True
+
+    def del_plus(self, name):
+        plus = self._plus_dict.pop(name, None)
+        if plus is None: return None
+        self._dirty = True
+
 
 
 
@@ -61,46 +96,45 @@ class AttributeManager(object):
         object.__setattr__(self, '_attr_dict', {})
 
 
-    def __getattr__(self, id): return self.get(id).value
+    def __getattr__(self, name): return self.get_value(name)
 
 
-    def __setattr__(self, id, value): self.set_base_value(id, value)
+    def __setattr__(self, name, value): self.set_value(name, value)
 
-
-    @property
-    def init_required_attrs(self): return [name for name, attr in self._attr_dict.items() if attr.init_required]
 
     @property
     def attrs(self): return self._attr_dict.keys()
 
 
-    def set_base_value(self, id, value): self.get(id).base = value
+    def set_value(self, name, value): self.get(name).value = value
 
 
-    def add_plus(self, id, pid, value): self.get(id).add_plus(pid, value)
+    def get_value(self, name): return self.get(name).value
 
 
-    def del_plus(self, id, pid): self.get(id).del_plus(pid)
+    def add_plus(self, name, pname, value): self.get(name).add_plus(pname, value)
 
 
-    def add(self, id, *args, **kwargs):
-        if self.get(id, False) is not None: raise Exception("attribute {0} has been existed".format(id))
-        attr = Attribute(id, *args, **kwargs)
-        self._attr_dict[id] = attr
+    def del_plus(self, name, pname): self.get(name).del_plus(pname)
 
 
-    def get(self, id, exception=True):
-        attr = self._attr_dict.get(id, None)
-        if attr is None and exception: raise Exception("attribute {0} is not existed".format(id))
+    def add(self, type, name, *args, **kwargs):
+        if self.get(name, False) is not None: raise Exception("attribute {0} has been existed".format(name))
+
+        if type == 'static': attr = StaticAttribute(name, *args, **kwargs)
+        elif type == 'value': attr = ValueAttribute(name, *args, **kwargs)
+        elif type == 'plus': attr = PlusAttribute(name, *args, **kwargs)
+        else: raise Exception('invalid attribute type {0}'.format(type))
+
+        self._attr_dict[name] = attr
+
+
+    def get(self, name, exception=True):
+        attr = self._attr_dict.get(name, None)
+        if attr is None and exception: raise Exception("attribute {0} is not existed".format(name))
         return attr
 
 
 
-
-if __name__ == "__main__":
-    attr = AttributeManager()
-    attr.add('hp', 100)
-    attr.hp += 1
-    print(type(attr.hp), attr.hp)
 
 

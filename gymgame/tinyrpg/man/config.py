@@ -77,7 +77,7 @@ def gen_players():
     for i in range(NUM_PLAYERS):
         player = copy.deepcopy(BASE_PLAYER)
         player.id = player.id.format(i)
-        player.position = gen_init_position(PLAYER_INIT_RADIUS)
+        #player.position = gen_init_position(PLAYER_INIT_RADIUS)
         _last_players.append(player)
     return _last_players
 

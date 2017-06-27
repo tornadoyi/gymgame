@@ -1,2 +1,2 @@
 
-from .map import *
+from .map import Map

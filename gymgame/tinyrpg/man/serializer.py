@@ -5,10 +5,7 @@ Attr = config.Attr
 
 class Serializer(framework.Serializer):
 
-    def _deserialize_action(self, data):
-        # data (player_id, action, parms ...)
-        actions = [(id, config.Action.idle) for id in config.PLAYER_IDS]
-        return actions
+    def _deserialize_action(self, data): return []
 
 
     def _select_character(self, k):
