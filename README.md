@@ -6,10 +6,10 @@
 ## Quick Install
 
 ```bash
-    # setup gymgame
-    git clone https://github.com/tornadoyi/gymgame.git
-    cd gymgame
-    sudo python setup.py install
+# setup gymgame
+git clone https://github.com/tornadoyi/gymgame.git
+cd gymgame
+sudo python setup.py install
 ```
 
 
@@ -17,16 +17,16 @@
 
 Run the game
 ```python
-    import gym
-    from gymgame.tinyrpg.man import config
+import gym
+from gymgame.tinyrpg.man import config
 
-	env = gym.make(config.GAME_NAME)
-    env.reset()
-	
-    while True:
-        if env.env.terminal: env.reset()
-        env.step([])
-        if render: env.render()
+env = gym.make(config.GAME_NAME)
+env.reset()
+
+while True:
+    if env.env.terminal: env.reset()
+    env.step([])
+    #env.render()  # open it at jupyter notebook
 ```
 
 
