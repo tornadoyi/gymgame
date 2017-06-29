@@ -39,15 +39,27 @@ class Data(object):
 
     def reset(self):
         # map
+        self._reset_map()
+
+        # players
+        self._reset_players()
+
+        # npcs
+        self._reset_npcs()
+
+
+    def _reset_map(self):
         self._map_info = copy.deepcopy(self._create_map_info())
         self._map = self._map_cls(**self._map_info)
 
-        # players
+
+    def _reset_players(self):
         self._players = []
         self._player_infos = copy.deepcopy(self._create_player_infos())
         for info in self._player_infos: self._players.append(self._player_cls(info))
 
-        # npcs
+
+    def _reset_npcs(self):
         self._npcs = []
         self._npc_infos = copy.deepcopy(self._create_npc_infos())
         for info in self._npc_infos: self._npcs.append(self._npc_cls(info))

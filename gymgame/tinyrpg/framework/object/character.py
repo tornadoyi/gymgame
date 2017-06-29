@@ -28,14 +28,14 @@ class Character(Object):
     def is_relation(self, relation, o): return is_relation(relation, self.attribute.camp , o.attribute.camp)
 
 
-    def move_toward(self, direct, speed=None):
+    def move_toward(self, direct, speed=None, bounds_limit=False):
         if not self.can_move(): return
-        self._map.move_toward(self.attribute.id, direct, speed)
+        self._map.move_toward(self.attribute.id, direct, speed, bounds_limit)
 
 
-    def move_to(self, position):
+    def move_to(self, position, bounds_limit=False):
         if not self.can_move(): return
-        self._map.move_to(self.attribute.id, position)
+        self._map.move_to(self.attribute.id, position, bounds_limit)
 
 
     def can_move(self): return not self._skill.busy

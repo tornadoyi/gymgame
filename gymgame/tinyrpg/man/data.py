@@ -5,6 +5,10 @@ from .config import *
 
 
 class Data(data.Data):
+    def __init__(self, map_cls=None, player_cls=None, bullet_cls=None, coin_cls=None):
+        super(Data, self).__init__(map_cls, player_cls, None)
+        self._bullet_cls = bullet_cls
+        self._coin_cls = coin_cls
 
     def _create_map_info(self): return edict(center=MAP_CENTER, size=MAP_SIZE)
 
@@ -13,52 +17,50 @@ class Data(data.Data):
         for i in range(NUM_PLAYERS):
             player = copy.deepcopy(BASE_PLAYER)
             player.id = player.id.format(i)
-            # player.position = gen_init_position(PLAYER_INIT_RADIUS)
+            player.position = gen_init_position(PLAYER_INIT_RADIUS)
             players.append(player)
         return players
 
 
 
-    def _create_npc_infos(self):
-        npcs = []
+    def _reset_npcs(self):
+        self._npcs = []
+        self._bullet_infos = copy.deepcopy(self._create_bullet_infos())
+        for info in self._bullet_infos: self._npcs.append(self._bullet_cls(info))
+
+        self._coin_infos = copy.deepcopy(self._create_coin_infos())
+        for info in self._coin_infos: self._npcs.append(self._coin_cls(info))
+
+
+    def _create_bullet_infos(self):
+        bullets = []
         index = np.random.randint(0, len(self._player_infos))
         player = self._player_infos[index]
 
-        for i in range(NUM_NPC):
+        for i in range(NUM_BULLET):
             # position and direct
-            position = self._gen_init_position(NPC_INIT_RADIUS)
-            direct = self._gen_npc_direct(position, player.position)
+            position = gen_init_position(BULLET_INIT_RADIUS)
+            direct = gen_aim_direct(position, player.position)
 
-            npc = copy.deepcopy(BASE_NPC)
-            npc.id = npc.id.format(i)
-            npc.position = position
-            npc.direct = direct
-            npcs.append(npc)
+            bullet = copy.deepcopy(BASE_BULLET)
+            bullet.id = bullet.id.format(i)
+            bullet.position = position
+            bullet.direct = direct
+            bullets.append(bullet)
 
-        return npcs
-
-    def _gen_init_position(self, r_range):
-        r_range = np.array(r_range)
-        minx, maxx = MAP_SIZE.x / 2 * r_range
-        miny, maxy = MAP_SIZE.y / 2 * r_range
-        r = Vector2(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
-        direct = Vector2(*np.random.uniform(-1.0, 1.0, 2))
-        return direct.normalized * r
+        return bullets
 
 
-    def _gen_npc_direct(self, src_pos, dst_pos):
-        def _aim():
-            direct = dst_pos - src_pos
-            angle = np.random.uniform(-NPC_DIRECT_SHAKE_ANGLE, NPC_DIRECT_SHAKE_ANGLE)
-            return direct.rotate(angle)
+    def _create_coin_infos(self):
+        coins = []
+        for i in range(NUM_COIN):
+            coin = copy.deepcopy(BASE_COIN)
+            coin.id = coin.id.format(i)
+            coin.position = gen_init_position(COIN_INIT_RADIUS)
+            coins.append(coin)
+        return coins
 
-        def _random():
-            return Vector2(*np.random.uniform(-1, 1, 2))
 
-        if np.random.rand() < NPC_AIM_PROBABILITY:
-            return _aim()
-        else:
-            return _random()
 
 
 

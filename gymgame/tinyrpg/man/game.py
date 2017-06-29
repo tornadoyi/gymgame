@@ -1,31 +1,61 @@
 from gymgame.engine import extension
 from .. import framework
-from ..framework import Character, NPC, Player, Map
 from . import config
 import numpy as np
 from .data import Data
 
 
 
-
-@extension(NPC)
-class NPCExtension(object):
-    def move_toward(self, direct): self._map.move_toward(self.attribute.id, direct, bounds_limit=False)
-
-    def move_to(self, position): self._map.move_to(self.attribute.id, position, bounds_limit=False)
+class Bullet(framework.NPC):
 
     def _update(self):
         self.move_toward(self.attribute.direct)
-        if self.attribute.hp < 1e-6 or not self._map.in_bounds(self.attribute.position):
-            self._map.remove(self.attribute.id)
+        if self.attribute.hp > 1e-6 and self._map.in_bounds(self.attribute.position): return
+
+        # revive
+        if config.BULLET_REVIVE:
+            self.revive()
+        else:
+            self.map.remove(self.attribute.id)
+
+
+    def revive(self):
+        self.attribute.position = config.gen_init_position(config.BULLET_INIT_RADIUS)
+        players = self.map.players
+        if len(players) != 0:
+            index = np.random.randint(0, len(players))
+            player = players[index]
+            self.attribute.hp = self.attribute.max_hp
+            self.attribute.direct = config.gen_aim_direct(self.attribute.position, player.attribute.position)
+
+
+class Coin(framework.NPC):
+    def _update(self):
+        if self.attribute.hp > 1e-6: return
+
+        # revive
+        if config.COIN_REVIVE:
+            self.revive()
+        else:
+            self.map.remove(self.attribute.id)
+
+
+    def revive(self):
+        self.attribute.hp = self.attribute.max_hp
+        self.attribute.position = config.gen_init_position(config.COIN_INIT_RADIUS)
 
 
 
 class Game(framework.Game):
 
     def _check_terminal(self):
-        players = self._map.finds(Player)
-        return players[0].attribute.hp < 1e-6 or len(self.map.npcs) == 0
+        players = self._map.players
+        if len(self.map.npcs) == 0: return True
+
+        for player in players:
+            if player.attribute.hp > 1e-6: return False
+
+        return True
 
 
     def _step(self, actions):
@@ -61,10 +91,12 @@ class Game(framework.Game):
         for i_player, i_npc in cond:
             player = players[i_player]
             npc = npcs[i_npc]
-            player.attribute.hp -= npc.attribute.hp
+            if isinstance(npc, Bullet): player.attribute.hp -= npc.attribute.hp
             npc.attribute.hp = 0
 
 
 
 
-def make(): return Game(Data(Map, Player, NPC), **config.GAME_PARAMS)
+
+
+def make(): return Game(Data(framework.Map, framework.Player, Bullet, Coin), **config.GAME_PARAMS)
