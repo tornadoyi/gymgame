@@ -57,3 +57,8 @@ def is_friend(c1, c2): return not is_enemy(c1, c2)
 def friend_camp(c): return c
 
 def enemy_camp(c): return (2**32-1) ^ c
+
+
+
+
+

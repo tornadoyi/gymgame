@@ -4,11 +4,9 @@ from .object import NPC
 
 
 class Game(framework.Game):
-    def __init__(self, map_creator, player_creator, npc_creator, *args, **kwargs):
-        super(Game, self).__init__(*args, **kwargs)
-        self._map_creator = map_creator
-        self._player_creator = player_creator
-        self._npc_creator = npc_creator
+    def __init__(self, data,  **kwargs):
+        super(Game, self).__init__(**kwargs)
+        self._data = data
 
 
 
@@ -18,10 +16,11 @@ class Game(framework.Game):
 
     def _reset(self):
         # init all modules
-        self._map = self._map_creator()
+        self._data.reset()
+        self._map = self._data.map
         self._map.on_game_load(self)
-        players = self._player_creator()
-        npcs = self._npc_creator()
+        players = self._data.players
+        npcs = self._data.npcs
 
         # add objects to map
         for o in list(players + npcs): self._map.add(o)
