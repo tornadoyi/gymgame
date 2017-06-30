@@ -1,6 +1,6 @@
 from types import FunctionType, MethodType
 from gymgame.engine import Vector2, Bounds2, geometry2d as g2d
-from ..object import Player, NPC, Bullet
+from ..object import Character, Player, NPC, Bullet
 from collections import OrderedDict
 
 
@@ -19,6 +19,9 @@ class Map(object):
 
     @property
     def game(self): return self._game
+
+    @property
+    def characters(self): return [o for _, o in self._object_dict.items() if isinstance(o, Character)]
 
     @property
     def players(self): return [o for _, o in self._object_dict.items() if isinstance(o, Player)]

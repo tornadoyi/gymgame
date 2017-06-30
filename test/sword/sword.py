@@ -12,7 +12,7 @@ def run(render=False):
 
     while True:
         if env.env.terminal: env.reset()
-        time.sleep(1.0/60)
+        time.sleep(1.0/600)
         env.step([])
         if render: env.render()
 

@@ -41,11 +41,16 @@ class Serializer(framework.Serializer):
 
             return grid
 
-        player_grid = _objs_to_grid(players, '/map/players')
-        coin_gird = _objs_to_grid(coins, '/map/coins')
-        bullet_grid = _objs_to_grid(bullets, '/map/bullets')
 
-        grid = np.concatenate((player_grid, coin_gird, bullet_grid), axis=2)
+        grid_list = []
+
+        grid_list.append(_objs_to_grid(players, '/map/players'))
+
+        if config.NUM_COIN > 0: grid_list.append(_objs_to_grid(coins, '/map/coins'))
+
+        if config.NUM_BULLET > 0: grid_list.append(_objs_to_grid(bullets, '/map/bullets'))
+
+        grid = np.concatenate(grid_list, axis=2)
         return grid
 
 
@@ -60,13 +65,16 @@ class Serializer(framework.Serializer):
         self._select_character(k)
         k.exit()
 
-        k.enter('coins')
-        self._select_character(k)
-        k.exit()
+        if config.NUM_COIN:
+            k.enter('coins')
+            self._select_character(k)
+            k.exit()
 
-        k.enter('bullets')
-        self._select_character(k)
-        k.exit()
+
+        if config.NUM_BULLET:
+            k.enter('bullets')
+            self._select_character(k)
+            k.exit()
 
         k.exit()
 

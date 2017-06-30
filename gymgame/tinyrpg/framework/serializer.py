@@ -19,9 +19,11 @@ class Serializer(framework.Serializer):
         self._select_character(k)
         k.exit()
 
+        '''
         k.enter('bullets')
         self._select_bullet(k)
         k.exit()
+        '''
 
         k.exit()
 

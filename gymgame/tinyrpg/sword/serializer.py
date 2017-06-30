@@ -9,5 +9,5 @@ class Serializer(framework.Serializer):
 
 
     def _select_character(self, k):
-        super(Serializer, self).__init__()
+        super(Serializer, self)._select_character(k)
 

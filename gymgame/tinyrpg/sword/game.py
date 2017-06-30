@@ -1,18 +1,21 @@
+import numpy as np
 from gymgame.engine import extension
 from .. import framework
-from ..framework import Character, NPC, Player
 from . import config
-import numpy as np
+from .data import Data
+
+class Player(framework.Player):
+    def __init__(self, *args, **kwargs):
+        super(Player, self).__init__(*args, **kwargs)
+
+
+
+class NPC(framework.NPC):
+    def __init__(self, *args, **kwargs):
+        super(NPC, self).__init__(*args, **kwargs)
 
 
 class Map(framework.Map):
-    def __init__(self):
-        super(Map, self).__init__(config.MAP_CENTER, config.MAP_SIZE)
-
-
-
-@extension(NPC)
-class NPCExtension(object):
     pass
 
 
@@ -63,10 +66,4 @@ class Game(framework.Game):
 
 
 
-def make():
-    return Game(
-        lambda : Map(),
-        lambda : [Player(data) for data in config.gen_players()],
-        lambda: [NPC(data) for data in config.gen_npcs()],
-        **config.GAME_PARAMS
-    )
+def make(): return Game(Data(Map, Player, NPC), **config.GAME_PARAMS)

@@ -101,7 +101,7 @@ class SerializerKernel(object):
     class n_div_tag(_n_tag):
         def __call__(self, v, norm):
             n = self.get(norm)
-            assert (n != 0).any()
+            if (n == 0).any(): return n
             return v / n
 
     class _n_value(_normalizer):
