@@ -11,9 +11,9 @@ GAME_PARAMS = edict()
 
 NUM_PLAYERS = 1
 
-NUM_BULLET = 1#30
+NUM_BULLET = 30
 
-NUM_COIN = 1#30
+NUM_COIN = 30
 
 BULLET_AIM_PROBABILITY = 0.3
 
@@ -48,7 +48,7 @@ BASE_BULLET = edict(
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
     speed = 10.0,
-    radius = 0.3,
+    radius = 0.1,
     max_hp = 1,
 )
 
@@ -57,7 +57,7 @@ BASE_COIN = edict(
     id = "coin-{0}",
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
-    radius = 0.3,
+    radius = 0.1,
     max_hp = 1,
 )
 

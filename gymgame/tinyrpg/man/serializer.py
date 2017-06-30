@@ -35,15 +35,15 @@ class Serializer(framework.Serializer):
                 o = objs[i]
                 position = o.attribute.position * scale
                 r = o.attribute.radius * scale
-                min, max = np.round(position-r).astype(int), np.round(position+r).astype(int) + 1
+                min, max = np.floor(position-r).astype(int), np.ceil(position+r).astype(int)
                 min, max = np.max([grid_min, min], axis=0), np.min([grid_max, max], axis=0)
                 grid[min[0]:max[0], min[1]:max[1]] = s_mat[i]
 
             return grid
 
         player_grid = _objs_to_grid(players, '/map/players')
-        coin_gird = _objs_to_grid(players, '/map/coins')
-        bullet_grid = _objs_to_grid(players, '/map/bullets')
+        coin_gird = _objs_to_grid(coins, '/map/coins')
+        bullet_grid = _objs_to_grid(bullets, '/map/bullets')
 
         grid = np.concatenate((player_grid, coin_gird, bullet_grid), axis=2)
         return grid
