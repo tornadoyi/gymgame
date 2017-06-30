@@ -51,16 +51,19 @@ class Render(object):
         self._plt_map.line(x=[_x_min, _x_max, _x_max, _x_min, _x_min], y=[_y_min, _y_min, _y_max, _y_max, _y_min],
                            line_color="navy", line_alpha=0.3, line_dash="dotted", line_width=2)
 
-        self.player_num, self.bullet_num = len(self._map.players), len(self._map.bullets)
-        self.total_num = self.player_num + self.bullet_num
+        self.player_num, self.bullet_num, self.coin_num = \
+            len(self._map.players), len(self._map.bullets), len(self._map.coins)
+        self.total_num = self.player_num + self.bullet_num + self.coin_num
 
         # draw balls
         self.rd_loc = self._plt_map.circle(
             [-1] * self.total_num, [-1] * self.total_num,
-            radius=[_.attribute.radius for _ in self._map.players] + [_.attribute.radius for _ in self._map.bullets],
+            radius=[_.attribute.radius for _ in self._map.players]
+                   + [_.attribute.radius for _ in self._map.bullets]
+                   + [_.attribute.radius for _ in self._map.coins],
             line_color="gold",
-            line_width=[2] * self.player_num + [1] * self.bullet_num,
-            fill_color=["green"] * self.player_num + ["firebrick"] * self.bullet_num,
+            line_width=[2] * self.player_num + [1] * self.bullet_num + [1] * self.coin_num,
+            fill_color=["green"] * self.player_num + ["firebrick"] * self.bullet_num + ["blue"] * self.coin_num,
             fill_alpha=0.6)
 
         # show reward trend
@@ -93,8 +96,12 @@ class Render(object):
 
         # note： 如果频率过快， jupyter notebook会受不了
         self._map = self._game.map
-        all_x = [_.attribute.position.x for _ in self._map.players] + [_.attribute.position.x for _ in self._map.bullets]
-        all_y = [_.attribute.position.y for _ in self._map.players] + [_.attribute.position.y for _ in self._map.bullets]
+        all_x = [_.attribute.position.x for _ in self._map.players] \
+                + [_.attribute.position.x for _ in self._map.bullets] \
+                + [_.attribute.position.x for _ in self._map.coins]
+        all_y = [_.attribute.position.y for _ in self._map.players] \
+                + [_.attribute.position.y for _ in self._map.bullets] \
+                + [_.attribute.position.y for _ in self._map.coins]
         self.rd_loc.data_source.data['x'] = all_x
         self.rd_loc.data_source.data['y'] = all_y
 
