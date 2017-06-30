@@ -27,6 +27,8 @@ class Render(object):
         bounds = self._map.bounds
         _x_min, _x_max = int(bounds.min.x), int(bounds.max.x)
         _y_min, _y_max = int(bounds.min.y), int(bounds.max.y)
+        _x_size = _x_max - _x_min
+        _y_size = _y_max - _y_min
 
         output_notebook()
 
@@ -34,8 +36,8 @@ class Render(object):
             plot_width=600,
             plot_height=600,
             # toolbar_location=None,
-            x_range=(_x_min * 1.1, _x_max * 1.1),
-            y_range=(_y_min * 1.1, _y_max * 1.1),
+            x_range=(_x_min - _x_size*0.1, _x_max + _x_size*0.1),
+            y_range=(_y_min - _y_size*0.1, _y_max + _y_size*0.1),
             # x_range=(min_screen_x - 1, max_screen_x + 1),
             # y_range=(max_screen_y + 1, min_screen_y - 1),
             x_axis_location="above",
