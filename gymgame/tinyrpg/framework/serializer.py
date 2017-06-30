@@ -7,6 +7,7 @@ Attr = config.Attr
 
 class Serializer(framework.Serializer):
 
+
     def _select(self, k, *args):
         k.enter('map')
 
@@ -16,6 +17,10 @@ class Serializer(framework.Serializer):
 
         k.enter('npcs')
         self._select_character(k)
+        k.exit()
+
+        k.enter('bullets')
+        self._select_bullet(k)
         k.exit()
 
         k.exit()
@@ -35,4 +40,8 @@ class Serializer(framework.Serializer):
         k.add(Attr.speed, None, k.n_div_tag(Attr.speed))
         k.add(Attr.radius, None, k.n_div_tag(Attr.radius))
 
+
+    def _select_bullet(self, k):
+        k.add(Attr.hp, None, k.n_div_tag(Attr.hp))
+        k.add(Attr.max_hp, None, k.n_div_tag(Attr.max_hp))
 

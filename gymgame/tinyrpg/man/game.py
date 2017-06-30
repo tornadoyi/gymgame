@@ -5,6 +5,47 @@ import numpy as np
 from .data import Data
 
 
+class Player(framework.Player):
+    def __init__(self, *args, **kwargs):
+        super(Player, self).__init__(*args, **kwargs)
+        self._total_coins = 0
+        self._total_hits = 0
+
+        self._step_coins = 0
+        self._step_hits = 0
+
+
+    @property
+    def total_coins(self): return self._total_coins
+
+    @property
+    def total_hits(self): return self._total_hits
+
+    @property
+    def step_coins(self): return self._step_coins
+
+    @property
+    def step_hits(self): return self._step_hits
+
+
+    def hit(self, hits):
+        self.attribute.hp -= hits
+        self._step_hits += hits
+        self._total_hits += hits
+
+
+    def get_coin(self, count):
+        if config.COIN_RECOVER_HP: self.attribute.hp += count
+        self._step_coins += count
+        self._total_coins += count
+
+
+    def _update(self):
+        self._step_coins = 0
+        self._step_hits = 0
+
+
+
 
 class Bullet(framework.NPC):
 
@@ -20,7 +61,7 @@ class Bullet(framework.NPC):
 
 
     def revive(self):
-        self.attribute.position = config.gen_init_position(config.BULLET_INIT_RADIUS)
+        self.attribute.position = config.gen_init_position(self.map.bounds.center, config.BULLET_INIT_RADIUS)
         players = self.map.players
         if len(players) != 0:
             index = np.random.randint(0, len(players))
@@ -42,11 +83,22 @@ class Coin(framework.NPC):
 
     def revive(self):
         self.attribute.hp = self.attribute.max_hp
-        self.attribute.position = config.gen_init_position(config.COIN_INIT_RADIUS)
+        self.attribute.position = config.gen_init_position(self.map.bounds.center, config.COIN_INIT_RADIUS)
+
+
+
+class Map(framework.Map):
+
+    @property
+    def bullets(self): return [o for _, o in self._object_dict.items() if isinstance(o, Bullet)]
+
+    @property
+    def coins(self): return [o for _, o in self._object_dict.items() if isinstance(o, Coin)]
 
 
 
 class Game(framework.Game):
+
 
     def _check_terminal(self):
         players = self._map.players
@@ -91,7 +143,12 @@ class Game(framework.Game):
         for i_player, i_npc in cond:
             player = players[i_player]
             npc = npcs[i_npc]
-            if isinstance(npc, Bullet): player.attribute.hp -= npc.attribute.hp
+            if isinstance(npc, Bullet):
+                player.hit(npc.hp)
+
+            else:
+                player.get_coins(npc.hp)
+
             npc.attribute.hp = 0
 
 
@@ -99,4 +156,4 @@ class Game(framework.Game):
 
 
 
-def make(): return Game(Data(framework.Map, framework.Player, Bullet, Coin), **config.GAME_PARAMS)
+def make(): return Game(Data(Map, Player, Bullet, Coin), **config.GAME_PARAMS)

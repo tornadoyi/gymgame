@@ -10,14 +10,19 @@ class Data(data.Data):
         self._bullet_cls = bullet_cls
         self._coin_cls = coin_cls
 
-    def _create_map_info(self): return edict(center=MAP_CENTER, size=MAP_SIZE)
+
+    @property
+    def map_center(self): return (MAP_SIZE - 1) / 2
+
+    def _create_map_info(self): return edict(size=MAP_SIZE)
+
 
     def _create_player_infos(self):
         players = []
         for i in range(NUM_PLAYERS):
             player = copy.deepcopy(BASE_PLAYER)
             player.id = player.id.format(i)
-            player.position = gen_init_position(PLAYER_INIT_RADIUS)
+            player.position = gen_init_position(self.map_center, PLAYER_INIT_RADIUS)
             players.append(player)
         return players
 
@@ -39,7 +44,7 @@ class Data(data.Data):
 
         for i in range(NUM_BULLET):
             # position and direct
-            position = gen_init_position(BULLET_INIT_RADIUS)
+            position = gen_init_position(self.map_center, BULLET_INIT_RADIUS)
             direct = gen_aim_direct(position, player.position)
 
             bullet = copy.deepcopy(BASE_BULLET)
@@ -56,7 +61,7 @@ class Data(data.Data):
         for i in range(NUM_COIN):
             coin = copy.deepcopy(BASE_COIN)
             coin.id = coin.id.format(i)
-            coin.position = gen_init_position(COIN_INIT_RADIUS)
+            coin.position = gen_init_position(self.map_center, COIN_INIT_RADIUS)
             coins.append(coin)
         return coins
 

@@ -8,8 +8,8 @@ from collections import OrderedDict
 #   on_move(map, obj)
 
 class Map(object):
-    def __init__(self, center, size):
-        self._bounds = Bounds2(Vector2(*center), Vector2(*size))
+    def __init__(self, size):
+        self._bounds = Bounds2((size - 1) / 2, size)
         self._object_dict = OrderedDict()
         self._game = None
 

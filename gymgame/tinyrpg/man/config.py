@@ -4,16 +4,16 @@ from ..framework.config import *
 
 GAME_NAME = "tiny-rpg-man-v0"
 
-MAP_CENTER = Vector2(0, 0)
+
 MAP_SIZE = Vector2(10, 10)
 
 GAME_PARAMS = edict()
 
 NUM_PLAYERS = 1
 
-NUM_BULLET = 30
+NUM_BULLET = 1#30
 
-NUM_COIN = 30
+NUM_COIN = 1#30
 
 BULLET_AIM_PROBABILITY = 0.3
 
@@ -28,6 +28,9 @@ COIN_INIT_RADIUS = (0.3, 1.0)
 BULLET_REVIVE = True
 
 COIN_REVIVE = True
+
+COIN_RECOVER_HP = False
+
 
 
 BASE_PLAYER = edict(
@@ -60,13 +63,14 @@ BASE_COIN = edict(
 
 
 
-def gen_init_position(r_range):
+def gen_init_position(center, r_range):
     r_range = np.array(r_range)
     minx, maxx = (MAP_SIZE.x - 1) / 2 * r_range
     miny, maxy = (MAP_SIZE.y - 1) / 2 * r_range
     r = Vector2(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
     direct = Vector2(*np.random.uniform(-1.0, 1.0, 2))
-    return direct.normalized * r
+    return direct.normalized * r + center
+
 
 
 def gen_aim_direct(src_pos, dst_pos, probability=BULLET_AIM_PROBABILITY, shake_angle=BULLET_DIRECT_SHAKE_ANGLE):

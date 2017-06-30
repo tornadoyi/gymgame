@@ -9,9 +9,13 @@ class Game(framework.Game):
         self._data = data
 
 
+    @property
+    def data(self): return self._data
+
 
     @property
     def map(self): return self._map
+
 
 
     def _reset(self):

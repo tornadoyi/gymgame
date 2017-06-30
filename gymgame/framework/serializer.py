@@ -120,49 +120,46 @@ class SerializerKernel(object):
         self._obj_stack = [o]
 
 
-    def serialize(self, o, norm, s_dict=None, n_dict=None):
-        def _visit(o, k):
-            v = getattr(o, k)
-            if v is None: raise Exception('{0} is not existed in {1}'.format(k, type(o)))
-            return v
+    def serialize(self, o, norm, n_dict=None): return self._serialize_node(o, self._root_node, norm, n_dict)
 
-        def _serialize_core(path, o, root, norm, s_dict=None, n_dict=None):
-            serial = np.array([], np.float64)
-            if type(root) == _Structure:
+
+    def serialize_node(self, o, path, norm, n_dict=None):
+        node = self._nodes.get(path, None)
+        if node is None: raise Exception('node {0} is not existed'.format(path))
+        return self._serialize_node(o, node, norm, n_dict)
+
+
+    def _serialize_node(self, o, root, norm, n_dict=None):
+        serial = np.array([], np.float64)
+        if type(root) == _Structure:
+            for node in root.nodes:
+                s = self._serialize_node(self.visit(o, node.name), node, norm, n_dict)
+                serial = np.hstack([serial, s])
+
+        elif type(root) == _Array:
+            for i in range(len(o)):
                 for node in root.nodes:
-                    node_path = self.create_path(path, node.name)
-                    s = _serialize_core(node_path, _visit(o, node.name), node, norm, s_dict, n_dict)
+                    s = self._serialize_node(self.visit(o[i], node.name), node, norm, n_dict)
                     serial = np.hstack([serial, s])
 
-            elif type(root) == _Array:
-                for i in range(len(o)):
-                    array_path = self.create_path(path, str(i))
-                    for node in root.nodes:
-                        node_path = self.create_path(array_path, node.name)
-                        s = _serialize_core(node_path, _visit(o[i], node.name), node, norm, s_dict, n_dict)
-                        serial = np.hstack([serial, s])
+        elif type(root) == _Attribute:
+            s = root.serializer(o)
+            serial = root.normalizer(s, norm) if norm is not None else s
 
-            elif type(root) == _Attribute:
-                s = root.serializer(o)
-                serial = root.normalizer(s, norm) if norm is not None else s
+            # normalize dict
+            if n_dict is not None and isinstance(root.normalizer, SerializerKernel._n_tag):
+                tag = root.normalizer.tag
+                if tag not in n_dict:
+                    n_dict[tag] = np.abs(s)
+                else:
+                    n_dict[tag] = np.max([np.abs(s), n_dict[tag]], axis=0)
 
-                # normalize dict
-                if n_dict is not None and isinstance(root.normalizer, SerializerKernel._n_tag):
-                    tag = root.normalizer.tag
-                    if tag not in n_dict: n_dict[tag] = np.abs(s)
-                    else: n_dict[tag] = np.max([np.abs(s), n_dict[tag]], axis=0)
+        else:
+            assert False
 
-            else: assert False
+        return serial
 
-            # serialize dict
-            if s_dict is not None:
-                assert path not in s_dict
-                s_dict[path] = serial
 
-            return serial
-
-        s = _serialize_core(self._root_node.path, o, self._root_node, norm, s_dict, n_dict)
-        return s
 
 
 
@@ -192,6 +189,7 @@ class SerializerKernel(object):
         node = _Array(path, self._cur_node) if isinstance(v, (tuple, list)) else _Structure(path, self._cur_node)
         self._cur_node.add(node)
         self._cur_node = node
+        self._nodes[node.path] = node
 
         # auto enter element when v is list or tuple
         if isinstance(v, (tuple, list)):
@@ -207,7 +205,13 @@ class SerializerKernel(object):
         self._obj_stack.pop()
 
 
-    def visit(self, o, path):
+    def visit(self, o, k):
+        v = getattr(o, k)
+        if v is None: raise Exception('{0} is not existed in {1}'.format(k, type(o)))
+        return v
+
+
+    def visits(self, o, path):
         if path == "/": return o
         params = path.split("/")[1:]
         for p in params:
@@ -281,7 +285,7 @@ class Serializer(object):
     def _gen_normalized_data(self, game):
         # gen normalized tag
         tag_dict = {}
-        self._kernel.serialize(game, self._norm, None, tag_dict)
+        self._kernel.serialize(game, self._norm, tag_dict)
 
         norm = edict(tag=tag_dict, game=game)
         return norm
