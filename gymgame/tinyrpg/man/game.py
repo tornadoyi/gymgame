@@ -147,7 +147,7 @@ class Game(framework.Game):
                 player.hit(npc.hp)
 
             else:
-                player.get_coins(npc.hp)
+                player.get_coin(npc.hp)
 
             npc.attribute.hp = 0
 
