@@ -15,6 +15,13 @@ class NPC(framework.NPC):
         super(NPC, self).__init__(*args, **kwargs)
 
 
+    def _update(self):
+        players = self.map.players
+        i = np.random.randint(0, len(players))
+        player = players[i]
+        self.cast_skill()
+
+
 class Map(framework.Map):
     pass
 

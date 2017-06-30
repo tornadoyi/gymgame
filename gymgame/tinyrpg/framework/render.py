@@ -132,6 +132,7 @@ class Render(object):
         self._bullet_render.initialize(self._env, self._game, self._plot_dict)
         for render in self._custom_renders: render.initialize(self._env, self._game, self._plot_dict)
 
+        show(self._plot_dict.map, notebook_handle=True)
 
 
     def __call__(self, *args, **kwargs):

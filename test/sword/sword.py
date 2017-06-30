@@ -18,4 +18,4 @@ def run(render=False):
 
 
 if __name__  == '__main__':
-    run()
+    run(True)

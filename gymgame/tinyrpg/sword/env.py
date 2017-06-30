@@ -4,7 +4,7 @@ from gym.envs import register
 from . import config
 from . import game
 from .serializer import Serializer
-
+from .render import Render
 
 
 
@@ -20,11 +20,10 @@ class EnvironmentGym(framework.EnvironmentGym):
     def close(self, *args, **kwargs): pass  # close will trigger render(don't need it in many case)
 
     def _render(self, *args, **kwargs):
-        return
         if self._window is None:
             self._window = Render(self)
         else:
-            self._window.update()
+            self._window()
 
 
 
