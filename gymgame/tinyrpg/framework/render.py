@@ -3,7 +3,17 @@ from easydict import EasyDict as edict
 from bokeh.io import output_notebook, show, push_notebook
 from bokeh.plotting import figure
 from bokeh.layouts import gridplot
+from gymgame.tinyrpg.sword import config
+import colorsys
 
+# https://en.wikipedia.org/wiki/List_of_colors:_A%E2%80%93F
+CAMP_COLORS = ["#568203", "#003A6C", "#e32636", "#efdecd", "#e52b50", "#ffbf00", "#ff033e",
+               "#9966cc", "#a4c639", "#f2f3f4", "#cd9575", "#915c83", "#faebd7", "#008000",
+               "#8db600", "#fbceb1", "#00ffff", "#7fffd4", "#4b5320", "#e9d66b", "#b2beb5",
+               "#87a96b", "#ff9966", "#a52a2a", "#fdee00", "#6e7f80", "#ff2052", "#007fff",
+               "#f0ffff", "#89cff0", "#a1caf1", "#f4c2c2"]
+CAMP_COLORS = {_c: CAMP_COLORS[_i]
+               for _i, _c in enumerate(config.Camp)}
 
 class RenderBase():
 
@@ -31,13 +41,15 @@ class CharacterRender(ObjectRender):
             [-1] * c_num, [-1] * c_num,
             radius=[_.attribute.radius for _ in c_list],
             line_color=[self._get_line_color(_) for _ in c_list],
-            line_width=[1] * c_num,
+            line_width=[3] * c_num,
             fill_color=["firebrick"] * c_num,
             fill_alpha=[_c.attribute.hp/_c.attribute.max_hp for _c in c_list]
         )
 
     def _get_line_color(self, character):
-        return "red"
+        # for multi-camp, use this: [(a >> i) & 1 for i in range(32)]
+        # now we only consider single camp situation
+        return CAMP_COLORS[character.attribute.camp]
 
     def __call__(self, env, game):
         c_list = game.map.characters
