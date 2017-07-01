@@ -50,7 +50,7 @@ class Player(framework.Player):
 class Bullet(framework.NPC):
 
     def _update(self):
-        self.move_toward(self.attribute.direct)
+        self.move_toward(self.attribute.direct, bounds_limit=False)
         if self.attribute.hp > 1e-6 and self._map.in_bounds(self.attribute.position): return
 
         # revive
