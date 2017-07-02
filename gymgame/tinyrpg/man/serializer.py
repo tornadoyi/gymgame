@@ -6,9 +6,8 @@ Attr = config.Attr
 
 class Serializer(framework.Serializer):
     
-    def __init__(self, grid_size=None):
-        self._grid_size = grid_size
-        super(Serializer, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(Serializer, self).__init__(*args, **kwargs)
 
 
     @property
@@ -16,11 +15,13 @@ class Serializer(framework.Serializer):
 
 
     def _start(self, game):
-        super(Serializer, self)._start(game)
         k = self._create_kernel(game)
-
         map = game.map
         self._coin_shape = k.do_object(map.coins[0], self._serialize_npc).shape
+
+        # call parent _start
+        super(Serializer, self)._start(game)
+
 
 
 
@@ -42,6 +43,10 @@ class Serializer(framework.Serializer):
             grid_bullets = self._objects_to_grid(bounds, map.bullets, s_bullets, self._bullet_shape)
             return np.concatenate([grid_players, grid_coins, grid_bullets], axis=2)
 
+
+    def _serialize_coin(self, k, coin): self._serialize_character(k, coin)
+
+    def _serialize_bullet(self, k, bullet): self._serialize_character(k, bullet)
 
     def _serialize_character(self, k, char):
         attr = char.attribute

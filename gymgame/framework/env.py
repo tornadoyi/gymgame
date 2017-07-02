@@ -9,6 +9,7 @@ class Environment(object):
         self._serializer = serializer
 
         # init serializer
+        game.reset()
         self._serializer.start(game)
 
         # runtime

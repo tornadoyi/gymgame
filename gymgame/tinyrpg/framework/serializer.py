@@ -17,13 +17,16 @@ class Serializer(framework.Serializer):
 
 
     def _start(self, game):
-        super(Serializer, self)._start(game)
+        # get all object shape
         k = self._create_kernel()
-
         map = game.map
         self._player_shape = k.do_object(map.players[0], self._serialize_player).shape
         self._npc_shape = k.do_object(map.npcs[0], self._serialize_npc).shape
         self._bullet_shape = k.do_object(map.bullets[0], self._serialize_bullet).shape
+
+        # call parent _start
+        super(Serializer, self)._start(game)
+
 
 
     @property

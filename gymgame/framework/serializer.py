@@ -139,8 +139,6 @@ class Serializer(object):
 
 
     def _start(self, game):
-        # reset game
-        game.reset()
 
         # serialize
         states = self.serialize_state(game)
