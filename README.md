@@ -30,6 +30,42 @@ while True:
 ```
 
 
+Set serializer for your algorithm
+```python
+from gymgame.engine import Vector2, extension
+from gymgame.tinyrpg import man
+
+@extension(man.Serializer)
+class SerializerExtension():
+
+    def _deserialize_action(self, data):
+        direct = Vector2(data[0], data[1])
+        speed = data[2]
+        actions = [('player-0', man.config.Action.move_toward, direct, speed)]
+        return actions
+```
+
+
+Custom game reward
+```python
+@extension(man.EnvironmentGym):
+class EnvironmentExtension():
+    def _reward(self):
+        # todo something
+```
+
+
+Extension game logic
+```python
+@extension(man.NPC):
+class GameExtension():
+    def _update(self):
+        # todo something
+```
+
+
+
+
 
 ## Support
 
