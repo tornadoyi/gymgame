@@ -48,7 +48,7 @@ class SerializerExtension():
 
 Custom game reward
 ```python
-@extension(man.EnvironmentGym):
+@extension(man.EnvironmentGym)
 class EnvironmentExtension():
     def _reward(self):
         # todo something
@@ -57,7 +57,7 @@ class EnvironmentExtension():
 
 Extension game logic
 ```python
-@extension(man.NPC):
+@extension(man.NPC)
 class GameExtension():
     def _update(self):
         # todo something
