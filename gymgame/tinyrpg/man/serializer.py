@@ -11,75 +11,41 @@ class Serializer(framework.Serializer):
         super(Serializer, self).__init__()
 
 
-    def serialize_state(self, game):
-        return self._serialize_to_grid(game, self._grid_size or game.map.bounds.size)
+    @property
+    def coin_shape(self): return self._coin_shape
 
 
-    def _serialize_to_grid(self, game, grid_size):
+    def _start(self, game):
+        super(Serializer, self)._start(game)
+        k = self._create_kernel(game)
+
         map = game.map
-        scale = grid_size / map.bounds.size
-        coins = map.coins
-        bullets = map.bullets
-        players = map.players
-
-        grid_min, grid_max = np.zeros(2, dtype=int), (grid_size-1).astype(int)
-
-        def _objs_to_grid(objs, path):
-            num = len(objs)
-            s = self._kernel.serialize_node(objs, path, self._norm)
-            s_mat = s.reshape((num, -1))
-            c = s_mat.shape[-1]
-            grid = np.zeros((int(grid_size[0]), int(grid_size[1]), c), dtype=np.float64)
-
-            for i in range(len(objs)):
-                o = objs[i]
-                position = o.attribute.position * scale
-                r = o.attribute.radius * scale
-                min, max = np.floor(position-r).astype(int), np.ceil(position+r).astype(int)
-                min, max = np.max([grid_min, min], axis=0), np.min([grid_max, max], axis=0)
-                grid[min[0]:max[0], min[1]:max[1]] = s_mat[i]
-
-            return grid
-
-
-        grid_list = []
-
-        grid_list.append(_objs_to_grid(players, '/map/players'))
-
-        if config.NUM_COIN > 0: grid_list.append(_objs_to_grid(coins, '/map/coins'))
-
-        if config.NUM_BULLET > 0: grid_list.append(_objs_to_grid(bullets, '/map/bullets'))
-
-        grid = np.concatenate(grid_list, axis=2)
-        return grid
+        self._coin_shape = k.do_object(map.coins[0], self._serialize_npc).shape
 
 
 
     def _deserialize_action(self, data): return []
 
 
-    def _select(self, k, *args):
-        k.enter('map')
+    def _serialize_map(self, k, map):
+        s_players = k.do_object(map.players, self._serialize_player)
+        s_coins = k.do_object(map.coins, self._serialize_npc)
+        s_bullets = k.do_object(map.bullets, self._serialize_npc)
 
-        k.enter('players')
-        self._select_character(k)
-        k.exit()
+        if self._grid_size is None:
+            return np.hstack([s_players, s_coins, s_bullets])
 
-        if config.NUM_COIN:
-            k.enter('coins')
-            self._select_character(k)
-            k.exit()
+        else:
+            bounds = map.bounds
+            grid_players = self._objects_to_grid(bounds, map.players, s_players, self._player_shape)
+            grid_coins = self._objects_to_grid(bounds, map.coins, s_coins, self._coin_shape)
+            grid_bullets = self._objects_to_grid(bounds, map.bullets, s_bullets, self._bullet_shape)
+            return np.concatenate([grid_players, grid_coins, grid_bullets], axis=2)
 
 
-        if config.NUM_BULLET:
-            k.enter('bullets')
-            self._select_character(k)
-            k.exit()
-
-        k.exit()
-
-    def _select_character(self, k):
-        k.add(Attr.hp, None, k.n_div_tag(Attr.hp))
+    def _serialize_character(self, k, char):
+        attr = char.attribute
+        k.do(attr.hp, None, k.n_div_tag, Attr.hp)
 
 
 

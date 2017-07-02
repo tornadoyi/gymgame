@@ -9,7 +9,7 @@ class Environment(object):
         self._serializer = serializer
 
         # init serializer
-        self._serializer.on_start(game)
+        self._serializer.start(game)
 
         # runtime
         self._states = []
@@ -53,7 +53,7 @@ class Environment(object):
     def _reset(self, *args, **kwargs):
         self._reset_count += 1
         self._game.reset(*args, **kwargs)
-        self._serializer.on_reset(self._game)
+        self._serializer.reset(self._game)
         s = self._serializer.serialize_state(self._game)
         self._states = [s]
 
