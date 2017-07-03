@@ -41,7 +41,13 @@ class Serializer(framework.Serializer):
             grid_players = self._objects_to_grid(bounds, map.players, s_players, self._player_shape)
             grid_coins = self._objects_to_grid(bounds, map.coins, s_coins, self._coin_shape)
             grid_bullets = self._objects_to_grid(bounds, map.bullets, s_bullets, self._bullet_shape)
-            return np.concatenate([grid_players, grid_coins, grid_bullets], axis=2)
+
+            assemble = []
+            if grid_players is not None: assemble.append(grid_players)
+            if grid_coins is not None: assemble.append(grid_coins)
+            if grid_bullets is not None: assemble.append(grid_bullets)
+
+            return np.concatenate(assemble, axis=2)
 
 
     def _serialize_coin(self, k, coin): self._serialize_character(k, coin)

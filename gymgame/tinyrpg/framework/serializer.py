@@ -20,9 +20,11 @@ class Serializer(framework.Serializer):
         # get all object shape
         k = self._create_kernel()
         map = game.map
-        self._player_shape = k.do_object(map.players[0], self._serialize_player).shape
-        self._npc_shape = k.do_object(map.npcs[0], self._serialize_npc).shape
-        self._bullet_shape = k.do_object(map.bullets[0], self._serialize_bullet).shape
+
+
+        self._player_shape = k.do_object(map.players[0], self._serialize_player).shape if len(map.players) > 0 else None
+        self._npc_shape = k.do_object(map.npcs[0], self._serialize_npc).shape if len(map.npcs) > 0 else None
+        self._bullet_shape = k.do_object(map.bullets[0], self._serialize_bullet).shape if len(map.bullets) > 0 else None
 
         # call parent _start
         super(Serializer, self)._start(game)
@@ -57,7 +59,13 @@ class Serializer(framework.Serializer):
             grid_players = self._objects_to_grid(bounds, map.players, s_players, self._player_shape)
             grid_npcs = self._objects_to_grid(bounds, map.npcs, s_npcs, self._npc_shape)
             grid_bullets = self._objects_to_grid(bounds, map.bullets, s_bullets, self._bullet_shape)
-            return np.concatenate([grid_players, grid_npcs, grid_bullets], axis=2)
+
+            assemble = []
+            if grid_players is not None: assemble.append(grid_players)
+            if grid_npcs is not None: assemble.append(grid_npcs)
+            if grid_bullets is not None: assemble.append(grid_bullets)
+
+            return np.concatenate(assemble, axis=2)
 
 
     def _serialize_player(self, k, player): self._serialize_character(k, player)
@@ -92,6 +100,7 @@ class Serializer(framework.Serializer):
 
 
     def _objects_to_grid(self, bounds, objs, sobjs, shape):
+        if shape is None: return None
         offset = abs(bounds.min)
         scale = self._grid_size / bounds.size
         grid = np.zeros((int(self._grid_size[0]), int(self._grid_size[1]), shape[0]), dtype=self._dtype)

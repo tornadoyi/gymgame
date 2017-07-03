@@ -1,7 +1,8 @@
+import copy
 from easydict import EasyDict as edict
 import numpy as np
 from ..framework import data
-from .config import *
+from . import config
 
 
 class Data(data.Data):
@@ -12,17 +13,17 @@ class Data(data.Data):
 
 
     @property
-    def map_center(self): return (MAP_SIZE - 1) / 2
+    def map_center(self): return (config.MAP_SIZE - 1) / 2
 
-    def _create_map_info(self): return edict(size=MAP_SIZE)
+    def _create_map_info(self): return edict(size=config.MAP_SIZE)
 
 
     def _create_player_infos(self):
         players = []
-        for i in range(NUM_PLAYERS):
-            player = copy.deepcopy(BASE_PLAYER)
+        for i in range(config.NUM_PLAYERS):
+            player = copy.deepcopy(config.BASE_PLAYER)
             player.id = player.id.format(i)
-            player.position = gen_init_position(self.map_center, PLAYER_INIT_RADIUS)
+            player.position = config.gen_init_position(self.map_center, config.PLAYER_INIT_RADIUS)
             players.append(player)
         return players
 
@@ -42,12 +43,12 @@ class Data(data.Data):
         index = np.random.randint(0, len(self._player_infos))
         player = self._player_infos[index]
 
-        for i in range(NUM_BULLET):
+        for i in range(config.NUM_BULLET):
             # position and direct
-            position = gen_init_position(self.map_center, BULLET_INIT_RADIUS)
-            direct = gen_aim_direct(position, player.position)
+            position = config.gen_init_position(self.map_center, config.BULLET_INIT_RADIUS)
+            direct = config.gen_aim_direct(position, player.position)
 
-            bullet = copy.deepcopy(BASE_BULLET)
+            bullet = copy.deepcopy(config.BASE_BULLET)
             bullet.id = bullet.id.format(i)
             bullet.position = position
             bullet.direct = direct
@@ -58,10 +59,10 @@ class Data(data.Data):
 
     def _create_coin_infos(self):
         coins = []
-        for i in range(NUM_COIN):
-            coin = copy.deepcopy(BASE_COIN)
+        for i in range(config.NUM_COIN):
+            coin = copy.deepcopy(config.BASE_COIN)
             coin.id = coin.id.format(i)
-            coin.position = gen_init_position(self.map_center, COIN_INIT_RADIUS)
+            coin.position = config.gen_init_position(self.map_center, config.COIN_INIT_RADIUS)
             coins.append(coin)
         return coins
 
