@@ -59,7 +59,7 @@ class Game(object):
 
     def _render(self, *args, **kwargs): raise NotImplementedError("_renders should be implemented")
 
-    def _check_terminal(self): return self._steps >= self._max_steps
+    def _check_terminal(self): return self._steps >= self._max_steps - 1
 
 
     def reset(self, *args, **kwargs):
@@ -77,6 +77,7 @@ class Game(object):
         self._terminal = self._check_terminal()
         self._steps += 1
         self._total_steps += 1
+
 
 
     def close(self, *args, **kwargs): self._close(*args, **kwargs)

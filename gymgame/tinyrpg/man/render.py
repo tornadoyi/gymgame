@@ -115,7 +115,6 @@ class Render(object):
         # self.rd_loc.data_source.data['line_width'] = [10] * self.player_num + [thief_lw] * self.bullet_num
 
         # update training performance after each episode
-        print("done>>", self._game.terminal)
         if self._game.terminal:
             ep_reward = sum(self._env.rewards)
             ep_count = len(self.global_running_r)
