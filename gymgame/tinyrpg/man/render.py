@@ -92,9 +92,9 @@ class Render(object):
 
     def update(self):
         """update bokeh plots according to new env state and action data"""
-        # global_ob, reward, episode_count, current_step, current_is_caught = env_state_action
 
         # self._plt_map.title.text = "step: #{}".format(current_step)
+        self._plt_map.title.text = "step: #{}".format(self._game.steps)
 
         # note： 如果频率过快， jupyter notebook会受不了
         self._map = self._game.map
@@ -115,6 +115,7 @@ class Render(object):
         # self.rd_loc.data_source.data['line_width'] = [10] * self.player_num + [thief_lw] * self.bullet_num
 
         # update training performance after each episode
+        print("done>>", self._game.terminal)
         if self._game.terminal:
             ep_reward = sum(self._env.rewards)
             ep_count = len(self.global_running_r)
