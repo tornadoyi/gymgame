@@ -39,7 +39,7 @@ BASE_PLAYER = edict(
     id = "player-{0}",
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
-    speed = 12.0,
+    speed = 10.0,
     radius = 0.5,
     max_hp = 1,
 )
