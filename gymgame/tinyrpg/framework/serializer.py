@@ -117,7 +117,7 @@ class Serializer(framework.Serializer):
 
             # occupy one cell as least
             sub = np.max([max - min, (1, 1)], axis=0)
-            max += sub
+            max = min + sub
 
             # check bounds
             if (min < grid_min).any() or (max > grid_max).any(): continue
