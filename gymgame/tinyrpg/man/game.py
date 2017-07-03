@@ -101,6 +101,7 @@ class Game(framework.Game):
 
 
     def _check_terminal(self):
+        if super(Game, self)._check_terminal(): return True
         players = self._map.players
         if len(self.map.npcs) == 0: return True
 

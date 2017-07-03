@@ -40,6 +40,5 @@ class EnvironmentGym(framework.EnvironmentGym):
 register(
     id=config.GAME_NAME,
     entry_point='gymgame.tinyrpg.man:EnvironmentGym',
-    max_episode_steps=100,
     kwargs={'initializer': lambda: (game.make(), Serializer(config.GRID_SIZE)) }
 )

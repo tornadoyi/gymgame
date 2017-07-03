@@ -1,12 +1,13 @@
-
+import numpy as np
 
 
 class Game(object):
-    def __init__(self, fps = 60, speed_scale=1.0):
+    def __init__(self, fps = 60, speed_scale=1.0, max_steps=np.inf):
         self._fps = fps
         self._speed_scale = speed_scale
         self._total_resets = 0
         self._total_steps = 0
+        self._max_steps = max_steps
 
 
         # runtime
@@ -45,6 +46,9 @@ class Game(object):
     @fps.setter
     def fps(self, v): self._fps = v
 
+    @property
+    def max_steps(self): return self._max_steps
+
 
     # virtual methods
     def _reset(self, *args, **kwargs): raise NotImplementedError("_reset should be implemented")
@@ -55,7 +59,7 @@ class Game(object):
 
     def _render(self, *args, **kwargs): raise NotImplementedError("_renders should be implemented")
 
-    def _check_terminal(self): raise NotImplementedError("_check_terminal should be implemented")
+    def _check_terminal(self): return self._steps >= self._max_steps
 
 
     def reset(self, *args, **kwargs):
