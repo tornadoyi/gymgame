@@ -104,6 +104,7 @@ class Serializer(framework.Serializer):
         offset = abs(bounds.min)
         scale = self._grid_size / bounds.size
         grid = np.zeros((int(self._grid_size[0]), int(self._grid_size[1]), shape[0]), dtype=self._dtype)
+        if len(objs) == 0: return grid
 
         grid_min, grid_max = np.zeros(2, dtype=int), self._grid_size.astype(int)
 
