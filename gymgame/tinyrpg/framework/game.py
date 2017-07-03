@@ -40,6 +40,7 @@ class Game(framework.Game):
             player = self._map.find(id)
             f_action = getattr(player, type)
             f_action(*params)
+            player.update()
 
 
         # npc do
