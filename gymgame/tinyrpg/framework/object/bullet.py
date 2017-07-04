@@ -1,3 +1,4 @@
+import uuid
 import numpy as np
 from easydict import EasyDict as edict
 from .object import Object
@@ -120,7 +121,7 @@ class Emitter():
     def _get_bullets(self):
 
         def _create():
-            id = 'bullet-{0}'.format(self._gen_bullet_count)
+            id = 'bullet-{0}-{1}'.format(self._gen_bullet_count, uuid.uuid1())
             self._gen_bullet_count += 1
             return Bullet(edict(id=id,
                                 max_hp=self._penetration,

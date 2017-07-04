@@ -18,8 +18,15 @@ class AI(object):
         # choose target
         enemy = self._get_nearest_enemy()
         friend_skills, enemy_skills = self._get_valid_skills(enemy)
-        if len(friend_skills) + len(enemy_skills) == 0: return False
 
+
+        # move
+        if len(friend_skills) + len(enemy_skills) == 0:
+            self._master.move_to(enemy.attribute.position)
+            return True
+
+
+        # choose skill
         skill = None
         target = None
         if len(friend_skills) > 0 and np.random.rand() < config.AI.defense_probability:

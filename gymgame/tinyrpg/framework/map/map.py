@@ -43,6 +43,8 @@ class Map(object):
 
 
     def add(self, o, position=None):
+        id = o.attribute.id
+        if id in self._object_dict: raise Exception('object {0} has in map'.format(o))
         self._object_dict[o.attribute.id] = o
         if position is not None: o.attribute.position = position
         o.attribute.direct = o.attribute.direct.normalized

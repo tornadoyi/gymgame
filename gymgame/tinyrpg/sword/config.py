@@ -15,11 +15,11 @@ GAME_PARAMS = edict()
 
 NUM_PLAYERS = 1
 
-NUM_NPC = 1
+NUM_NPC = 3
 
 PLAYER_INIT_RADIUS = (0.0, 0.75)
 
-NPC_INIT_RADIUS = (0.0, 0.75)
+NPC_INIT_RADIUS = (0.85, 0.9)
 
 AI = edict(defense_probability=0.2)
 
@@ -37,7 +37,7 @@ SKILL_DICT = {
 
     'normal_shoot' : Skill(
         id = 'normal_shoot',
-        cast_time = 0.1,
+        cast_time = 0.3,
         mp_cost = 0,
         bullet_emitter = SingleEmitter(
             speed=15.0, penetration=1.0, max_range=MAP_SIZE.x, radius=0.1,
@@ -51,7 +51,7 @@ BASE_PLAYER = edict(
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
     speed = 10.0,
-    radius = 0.5,
+    radius = 0.3,
     max_hp = 100.0,
     camp = Camp[0],
     skills=list(SKILL_DICT.values())
@@ -63,10 +63,10 @@ BASE_NPC = edict(
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
     speed = 10.0,
-    radius = 0.5,
+    radius = 0.3,
     max_hp = 100.0,
     camp = Camp[1],
-    skills=list(SKILL_DICT.values())
+    skills=[SKILL_DICT['normal_attack']]
 )
 
 
