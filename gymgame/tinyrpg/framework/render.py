@@ -103,15 +103,22 @@ class MapRender(RenderBase):
         map = game.map
         # create figure
         bounds = map.bounds
-        x_min, x_max = int(bounds.min.x), int(bounds.max.x)
-        y_min, y_max = int(bounds.min.y), int(bounds.max.y)
+        _x_min, _x_max = int(bounds.min.x), int(bounds.max.x)
+        _y_min, _y_max = int(bounds.min.y), int(bounds.max.y)
+        _x_size = _x_max - _x_min
+        _y_size = _y_max - _y_min
 
         self._plt_map = figure(
             plot_width=self._with,
             plot_height=self._height,
-            x_range=(x_min, x_max),
-            y_range=(y_min, y_max),
+            x_range=(_x_min - _x_size * 0.1, _x_max + _x_size * 0.1),
+            y_range=(_y_min - _y_size * 0.1, _y_max + _y_size * 0.1),
         )
+
+        # draw edge
+        self._plt_map.line(x=[_x_min, _x_max, _x_max, _x_min, _x_min],
+                           y=[_y_min, _y_min, _y_max, _y_max, _y_min],
+                           line_color="navy", line_alpha=0.3, line_dash="dotted", line_width=2)
 
         plot_dict.map = self._plt_map
 
