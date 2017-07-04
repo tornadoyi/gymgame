@@ -1,8 +1,13 @@
 import numpy as np
-from gymgame.engine import extension
 from .. import framework
 from . import config
 from .data import Data
+from .ai import AI
+
+
+class Map(framework.Map):
+    pass
+
 
 class Player(framework.Player):
     def __init__(self, *args, **kwargs):
@@ -13,17 +18,15 @@ class Player(framework.Player):
 class NPC(framework.NPC):
     def __init__(self, *args, **kwargs):
         super(NPC, self).__init__(*args, **kwargs)
+        self._ai = AI(self)
 
 
     def _update(self):
-        players = self.map.players
-        i = np.random.randint(0, len(players))
-        player = players[i]
-        self.cast_skill()
+        if super(NPC, self)._update(): return
+        return self._ai()
 
 
-class Map(framework.Map):
-    pass
+
 
 
 

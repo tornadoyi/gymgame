@@ -102,6 +102,10 @@ class SkillManager(object):
 
 
     @property
+    def skill_list(self): return self._skill_list
+
+
+    @property
     def casting(self): return self._casting_skill
 
 
@@ -175,6 +179,11 @@ class SkillManager(object):
 
         # cost mp
         self._master.attribute.mp -= skill.mp_cost
+
+        # set direct
+        if target is not None or position is not None:
+            target_position = target.attribute.position if position is None else position
+            self._master.attribute.direct = target_position - self._master.attribute.position
 
         # start cast
         self._cast_start(skill, target, position)

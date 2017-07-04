@@ -1,5 +1,6 @@
 import numpy as np
 from gymgame import framework
+from .object import Bullet
 from . import config
 
 
@@ -21,10 +22,9 @@ class Serializer(framework.Serializer):
         k = self._create_kernel()
         map = game.map
 
-
         self._player_shape = k.do_object(map.players[0], self._serialize_player).shape if len(map.players) > 0 else None
         self._npc_shape = k.do_object(map.npcs[0], self._serialize_npc).shape if len(map.npcs) > 0 else None
-        self._bullet_shape = k.do_object(map.bullets[0], self._serialize_bullet).shape if len(map.bullets) > 0 else None
+        self._bullet_shape = k.do_object(Bullet({'id': 'sample'}), self._serialize_bullet).shape
 
         # call parent _start
         super(Serializer, self)._start(game)

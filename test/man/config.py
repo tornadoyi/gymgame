@@ -27,6 +27,8 @@ class SerializerExtension():
     DIRECTS = [Vector2.up, Vector2.right, Vector2.down, Vector2.left]
 
     def _deserialize_action(self, data):
+        xxx = man.Serializer._deserialize_action(self, data)
+
         direct = SerializerExtension.DIRECTS[data]
         actions = [('player-0', config.Action.move_toward, direct, None)]
         return actions

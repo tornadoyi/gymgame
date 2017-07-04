@@ -21,6 +21,9 @@ class Map(object):
     def game(self): return self._game
 
     @property
+    def objects(self): return list(self._object_dict.values())
+
+    @property
     def characters(self): return [o for _, o in self._object_dict.items() if isinstance(o, Character)]
 
     @property

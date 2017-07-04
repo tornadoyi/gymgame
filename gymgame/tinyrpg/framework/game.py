@@ -40,12 +40,10 @@ class Game(framework.Game):
             player = self._map.find(id)
             f_action = getattr(player, type)
             f_action(*params)
-            player.update()
 
 
-        # npc do
-        ids = [o.id for o in self._map.finds(NPC)]
-        for id in ids:
-            npc = self._map.find(id, exception=False)
-            if npc is None: continue
-            npc.update()
+        # all do
+        for obj in self._map.objects:
+            obj = self._map.find(obj.attribute.id, exception=False)
+            if obj is None: continue
+            obj.update()

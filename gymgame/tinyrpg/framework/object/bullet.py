@@ -6,7 +6,7 @@ from ..config import Attr
 
 class Bullet(Object):
 
-    def __init__(self, data, hit_callback, end_callback):
+    def __init__(self, data, hit_callback=None, end_callback=None):
         super(Bullet, self).__init__(data)
 
         self._hit_callback = hit_callback
@@ -29,7 +29,7 @@ class Bullet(Object):
         self._attribute.hp = self._attribute.max_hp
         self._start_time = map.game.time
         self._end_time = None
-        self._expect_end_time = self._start_time + self._atrribute.max_range / self._attribute.speed
+        self._expect_end_time = self._start_time + self._attribute.max_range / self._attribute.speed
         self._start_position = self._attribute.position
         self._end_position = None
 
@@ -43,7 +43,8 @@ class Bullet(Object):
 
 
     def on_hit(self, target):
-        if not self._hit_callback(target): return
+        hit = True if self._hit_callback is None else self._hit_callback(target)
+        if not hit: return
 
         # hit one
         self.attribute.hp -= 1
@@ -55,18 +56,25 @@ class Bullet(Object):
 
 
     def _update(self):
-        if self.game.time < self._expect_end_time:
-            self.move_toward(self.attribute.direct)
-
+        end = False
+        if self._expect_end_time == np.inf:
+            end = not self._map.in_bounds(self.attribute.position)
         else:
+            end = self.game.time >= self._expect_end_time
+
+        if end:
             # end of trip
             self.map.remove(self.attribute.id)
+
+        else:
+            self.move_toward(self.attribute.direct)
+
 
 
 
     def _init_attribute(self):
         super(Bullet, self)._init_attribute()
-        self._add_attr('static', Attr.max_range)
+        self._add_attr('static', Attr.max_range, base=np.inf)
         self._add_attr('plus', Attr.max_hp, base=0.0, range=(0, np.inf))
         self._add_attr('value', Attr.hp, base=self._attribute.max_hp, range=(0, lambda: self._attribute.max_hp))
 
@@ -92,6 +100,10 @@ class Emitter():
         bullets = self._get_bullets()
         self._deploy_bullets(master, bullets)
         for bullet in bullets: master.map.add(bullet)
+
+
+    @property
+    def factors(self): return self._factors
 
 
     @property
@@ -143,7 +155,7 @@ class SingleEmitter(Emitter):
         position = master.attribute.position + direct * master.attribute.radius * 1.1
 
         for bullet in bullets:
-            bullet.position = position
+            bullet.attribute.position = position
             bullet.direct = direct
     
 

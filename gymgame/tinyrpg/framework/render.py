@@ -5,6 +5,8 @@ from bokeh.plotting import figure
 from bokeh.layouts import gridplot
 from gymgame.tinyrpg.sword import config
 import colorsys
+import warnings
+warnings.filterwarnings('ignore')
 
 # https://en.wikipedia.org/wiki/List_of_colors:_A%E2%80%93F
 CAMP_COLORS = ["#568203", "#003A6C", "#e32636", "#efdecd", "#e52b50", "#ffbf00", "#ff033e",

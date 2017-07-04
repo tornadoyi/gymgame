@@ -21,6 +21,8 @@ PLAYER_INIT_RADIUS = (0.0, 0.75)
 
 NPC_INIT_RADIUS = (0.0, 0.75)
 
+AI = edict(defense_probability=0.2)
+
 
 SKILL_DICT = {
     'normal_attack' : Skill(
@@ -52,6 +54,7 @@ BASE_PLAYER = edict(
     radius = 0.5,
     max_hp = 100.0,
     camp = Camp[0],
+    skills=list(SKILL_DICT.values())
 )
 
 
@@ -63,6 +66,7 @@ BASE_NPC = edict(
     radius = 0.5,
     max_hp = 100.0,
     camp = Camp[1],
+    skills=list(SKILL_DICT.values())
 )
 
 

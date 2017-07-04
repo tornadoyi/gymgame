@@ -41,8 +41,7 @@ class Character(Object):
     def can_move(self): return not self._skill.busy
 
 
-    def _update(self):
-        self._skill.update()
+    def _update(self): return self._skill.update()
 
 
     def _init_attribute(self):

@@ -6,11 +6,6 @@ from .config import *
 
 
 class Data(data.Data):
-    def __init__(self, map_cls=None, player_cls=None, bullet_cls=None, coin_cls=None):
-        super(Data, self).__init__(map_cls, player_cls, None)
-        self._bullet_cls = bullet_cls
-        self._coin_cls = coin_cls
-
 
     @property
     def map_center(self): return (MAP_SIZE - 1) / 2
