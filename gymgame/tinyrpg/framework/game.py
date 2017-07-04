@@ -47,3 +47,4 @@ class Game(framework.Game):
             obj = self._map.find(obj.attribute.id, exception=False)
             if obj is None: continue
             obj.update()
+
