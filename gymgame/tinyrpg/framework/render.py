@@ -57,7 +57,7 @@ class CharacterRender(ObjectRender):
         all_y = [_.attribute.position.y for _ in c_list]
         self.rd.data_source.data['x'] = all_x
         self.rd.data_source.data['y'] = all_y
-        self.rd.data_source.data['radius'] = [_.attribute.radius for _ in c_list],
+        self.rd.data_source.data['radius'] = [_.attribute.radius for _ in c_list]
 
         # 暂时用fill_alpha来表示血量的状况
         self.rd.data_source.data['fill_alpha'] = [_c.attribute.hp / _c.attribute.max_hp for _c in c_list]
@@ -78,7 +78,8 @@ class BulletRender(ObjectRender):
             [-1] * bullet_num, [-1] * bullet_num,
             radius=[_.attribute.radius for _ in game.map.bullets],
             line_color="red",
-            fill_color="white",
+            fill_color="purple",
+            fill_alpha=0.6
             # line_width=[1] * bullet_num,
             # fill_color=["firebrick"] * bullet_num,
             # fill_alpha=0.6
