@@ -2,7 +2,7 @@
 
 import time
 import gym
-from gymgame.tinyrpg.man import config
+import config
 
 
 
@@ -11,9 +11,9 @@ def run(render=False):
     env.reset()
 
     while True:
-        if env.env.terminal: env.reset()
+        if env.terminal: env.reset()
         time.sleep(1.0/600)
-        env.step([])
+        env.step(1)
         if render: env.render()
 
 
