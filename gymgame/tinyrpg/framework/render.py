@@ -72,10 +72,10 @@ class PlayerRender(CharacterRender):
 class BulletRender(ObjectRender):
     def initialize(self, env, game, plot_dict):
         # TODO: 注意!! bokeh有点bug, 有可能初始化后的子弹数, 更新时只能显示最多那么多子弹了, 也就是说初始化时是上限
-        bullet_num = len(game.map.bullets)
+        bullet_num = 1000 #len(game.map.bullets)
         self.rd_bullets = plot_dict.map.circle(
             [-1] * bullet_num, [-1] * bullet_num,
-            radius=[_.attribute.radius for _ in game.map.bullets],
+            radius=[0.1] * bullet_num,   #[_.attribute.radius for _ in game.map.bullets],
             line_color="red",
             # line_width=[1] * bullet_num,
             # fill_color=["firebrick"] * bullet_num,
