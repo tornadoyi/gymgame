@@ -34,7 +34,6 @@ class ObjectRender(RenderBase):
 
 class CharacterRender(ObjectRender):
     def initialize(self, env, game, plot_dict):
-        # TODO: 注意!! bokeh有点bug, 有可能初始化后的子弹数, 更新时只能显示最多那么多子弹了, 也就是说初始化时是上限
         c_list = game.map.characters
         c_num = len(c_list)
 
@@ -58,6 +57,7 @@ class CharacterRender(ObjectRender):
         all_y = [_.attribute.position.y for _ in c_list]
         self.rd.data_source.data['x'] = all_x
         self.rd.data_source.data['y'] = all_y
+        self.rd.data_source.data['radius'] = [_.attribute.radius for _ in c_list],
 
         # 暂时用fill_alpha来表示血量的状况
         self.rd.data_source.data['fill_alpha'] = [_c.attribute.hp / _c.attribute.max_hp for _c in c_list]
@@ -89,7 +89,7 @@ class BulletRender(ObjectRender):
         all_y = [_.attribute.position.y for _ in game.map.bullets]
         self.rd_bullets.data_source.data['x'] = all_x
         self.rd_bullets.data_source.data['y'] = all_y
-        # 注意!! radius 必须设置上, 否则新子弹后续无法显示出来
+        # 注意!! radius 必须设置上, 否则如果初始化时radius为空, 则后续再也无法显示出来了
         self.rd_bullets.data_source.data['radius'] = [_.attribute.radius for _ in game.map.bullets]
 
 
