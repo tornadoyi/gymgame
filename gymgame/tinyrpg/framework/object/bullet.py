@@ -152,11 +152,11 @@ class SingleEmitter(Emitter):
 
     def _deploy_bullets(self, master, bullets):
         direct = master.attribute.direct
-        position = master.attribute.position + direct * master.attribute.radius * 1.1
+        position = master.attribute.position + direct * master.attribute.radius
 
         for bullet in bullets:
             bullet.attribute.position = position
-            bullet.direct = direct
+            bullet.attribute.direct = direct
     
 
 

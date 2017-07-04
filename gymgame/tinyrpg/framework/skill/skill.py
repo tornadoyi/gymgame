@@ -183,7 +183,7 @@ class SkillManager(object):
         # set direct
         if target is not None or position is not None:
             target_position = target.attribute.position if position is None else position
-            self._master.attribute.direct = target_position - self._master.attribute.position
+            self._master.attribute.direct = (target_position - self._master.attribute.position).normalized
 
         # start cast
         self._cast_start(skill, target, position)

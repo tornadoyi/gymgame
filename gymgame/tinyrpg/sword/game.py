@@ -71,8 +71,7 @@ class Game(framework.Game):
         for i_char, i_bullet in cond:
             char = chars[i_char]
             bullet = bullets[i_bullet]
-            char.attribute.hp -= bullet.attribute.hp
-            bullet.attribute.hp = 0
+            bullet.on_hit(char)
 
 
 

@@ -40,7 +40,7 @@ SKILL_DICT = {
         cast_time = 0.1,
         mp_cost = 0,
         bullet_emitter = SingleEmitter(
-            speed=15.0, penetration=10.0, max_range=MAP_SIZE.x, radius=0.1,
+            speed=15.0, penetration=1.0, max_range=MAP_SIZE.x, radius=0.1,
             factors=[Damage(30.0, Relation.enemy)])
     ),
 }
