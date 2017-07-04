@@ -66,7 +66,7 @@ BASE_NPC = edict(
     radius = 0.3,
     max_hp = 100.0,
     camp = Camp[1],
-    skills=list(SKILL_DICT.values())
+    skills=[SKILL_DICT['normal_attack']]
 )
 
 
