@@ -11,8 +11,14 @@ GAME_NAME = config.GAME_NAME
 
 
 # env constant
-config.MAP_SIZE = Vector2(10, 10)
+config.MAP_SIZE = Vector2(30, 30)
+
 config.GRID_SIZE = config.MAP_SIZE
+
+config.NUM_BULLET = 50
+
+config.NUM_COIN = 50
+
 
 
 @extension(man.Serializer)
