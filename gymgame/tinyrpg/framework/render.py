@@ -38,7 +38,6 @@ class CharacterRender(ObjectRender):
         c_list = game.map.characters
         c_num = len(c_list)
 
-        # 暂时用fill_alpha来表示血量的状况
         self.rd = plot_dict.map.circle(
             [-1] * c_num, [-1] * c_num,
             radius=[_.attribute.radius for _ in c_list],
@@ -59,6 +58,9 @@ class CharacterRender(ObjectRender):
         all_y = [_.attribute.position.y for _ in c_list]
         self.rd.data_source.data['x'] = all_x
         self.rd.data_source.data['y'] = all_y
+
+        # 暂时用fill_alpha来表示血量的状况
+        self.rd.data_source.data['fill_alpha'] = [_c.attribute.hp / _c.attribute.max_hp for _c in c_list]
 
 
 class NPCRender(CharacterRender):
