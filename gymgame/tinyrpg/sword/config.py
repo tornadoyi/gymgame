@@ -1,3 +1,4 @@
+import random
 from easydict import EasyDict as edict
 from gymgame.engine import *
 from ..framework.config import *
@@ -15,11 +16,13 @@ GAME_PARAMS = edict()
 
 NUM_PLAYERS = 1
 
-NUM_NPC = 3
+NUM_NPC = 1
 
 PLAYER_INIT_RADIUS = (0.0, 0.75)
 
 NPC_INIT_RADIUS = (0.85, 0.9)
+
+NPC_SKILL_COUNT = 1
 
 AI = edict(defense_probability=0.2)
 
@@ -52,7 +55,7 @@ BASE_PLAYER = edict(
     direct = Vector2(0, 0),
     speed = 10.0,
     radius = 0.3,
-    max_hp = 100.0,
+    max_hp = 100,
     camp = Camp[0],
     skills=list(SKILL_DICT.values())
 )
@@ -66,7 +69,7 @@ BASE_NPC = edict(
     radius = 0.3,
     max_hp = 100.0,
     camp = Camp[1],
-    skills=[SKILL_DICT['normal_attack']]
+    skills=[]
 )
 
 
@@ -79,3 +82,10 @@ def gen_init_position(center, r_range):
     return direct.normalized * r + center
 
 
+
+
+def gen_random_skills(count):
+    all_skills = list(SKILL_DICT.values())
+    count = np.min([len(all_skills), count])
+    indexes = random.sample(range(len(all_skills)), count)
+    return [all_skills[idx] for idx in indexes]

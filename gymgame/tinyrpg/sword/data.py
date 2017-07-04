@@ -30,6 +30,7 @@ class Data(data.Data):
             npc = copy.deepcopy(BASE_NPC)
             npc.id = npc.id.format(i)
             npc.position = gen_init_position(self.map_center, NPC_INIT_RADIUS)
+            npc.skills = gen_random_skills(NPC_SKILL_COUNT)
             npcs.append(npc)
         return npcs
 
