@@ -92,7 +92,7 @@ class Serializer(framework.Serializer):
 
     def _serialize_object(self, k, obj):
         attr = obj.attribute
-        k.do(attr.position, None, lambda v, norm: v / norm.game.map.bounds.size * 2)
+        k.do(attr.position, None, lambda v, norm: v / norm.game.map.bounds.max)
         k.do(attr.direct, None, None)
         k.do(attr.speed, None, k.n_div_tag, Attr.speed)
         k.do(attr.radius, None, k.n_div_tag, Attr.radius)

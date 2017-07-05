@@ -21,10 +21,10 @@ class Bounds(object):
 
 
     @property
-    def min(self): return self.center - (self.size-1) / 2
+    def min(self): return self.center - self.size / 2
 
     @property
-    def max(self): return self.center + (self.size-1) / 2
+    def max(self): return self.center + self.size / 2
 
 
     def contains(self, v):

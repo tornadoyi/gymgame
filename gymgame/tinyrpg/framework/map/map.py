@@ -9,7 +9,7 @@ from collections import OrderedDict
 
 class Map(object):
     def __init__(self, size):
-        self._bounds = Bounds2((size - 1) / 2, size)
+        self._bounds = Bounds2(size / 2, size)
         self._object_dict = OrderedDict()
         self._game = None
 

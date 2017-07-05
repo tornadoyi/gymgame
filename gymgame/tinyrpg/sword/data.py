@@ -8,7 +8,7 @@ from .config import *
 class Data(data.Data):
 
     @property
-    def map_center(self): return (MAP_SIZE - 1) / 2
+    def map_center(self): return MAP_SIZE / 2
 
     def _create_map_info(self): return edict(size=MAP_SIZE)
 

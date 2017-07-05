@@ -55,8 +55,20 @@ class Serializer(framework.Serializer):
     def _serialize_bullet(self, k, bullet): self._serialize_character(k, bullet)
 
     def _serialize_character(self, k, char):
+        if self._grid_size is None:
+            self._serialize_character_flat(k, char)
+        else:
+            self._serialize_character_grid(k, char)
+
+
+    def _serialize_character_flat(self, k, char):
         attr = char.attribute
         k.do(attr.hp, None, k.n_div_tag, Attr.hp)
+        k.do(attr.position, None, lambda v, norm: v / norm.game.map.bounds.max)
 
+
+    def _serialize_character_grid(self, k, char):
+        attr = char.attribute
+        k.do(attr.hp, None, k.n_div_tag, Attr.hp)
 
 

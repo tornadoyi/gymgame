@@ -1,4 +1,5 @@
 import numpy as np
+from easydict import EasyDict as edict
 
 
 SERIALIZE_DTYPE = np.float64
@@ -12,7 +13,7 @@ class _SerializedKernel(object):
     def s_one_hot(v, len): return np.eye(len)[int(v)]
 
     @staticmethod
-    def n_div_tag(v, norm, tag): return v / norm[tag]
+    def n_div_tag(v, norm, tag): return v if v == 0 else v / norm[tag]
 
     @staticmethod
     def n_div_value(v, norm, v2): return v / v2
@@ -24,7 +25,7 @@ class _SerializedKernel(object):
         self._dtype = dtype
 
         self._do_norm = False if gen_norm or norm is None else True
-        if self._gen_norm: self._norm = {}
+        if self._gen_norm: self._norm = edict()
 
         # runtime
         self._cache = None #[object, data, list]
@@ -53,7 +54,7 @@ class _SerializedKernel(object):
 
     def do(self, v, serializer, normalizer, *args):
         s = v if serializer is None else serializer(v)
-        n = s if normalizer is None or not self._do_norm is None else normalizer(s, self._norm, *args)
+        n = s if normalizer is None or not self._do_norm else normalizer(s, self._norm, *args)
 
         if self._gen_norm and normalizer is self.n_div_tag:
             self._norm[args[0]] = n
@@ -63,6 +64,7 @@ class _SerializedKernel(object):
             self._cache_list.append(n)
         else:
             self._merge_cache_list()
+            self._cache[1] = np.hstack([self._cache[1], n])
 
 
 
@@ -157,7 +159,7 @@ class Serializer(object):
         k = self._create_kernel(gen_norm=True)
         self._serialize_state(k, game)
         self._norm = k.norm
-        self._norm['game'] = game
+        self._norm.game = game
 
 
 

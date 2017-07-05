@@ -125,7 +125,7 @@ class Render(object):
 
             self.rd_reward.data_source.data['x'] = range(ep_count)
             self.rd_reward.data_source.data['y'] = self.global_running_r
-            self.plt_reward.title.text = "episode #{} / last_ep_reward: {:5.1f}".format(
-                ep_count, self.global_running_r[-1])
+            #self.plt_reward.title.text = "episode #{} / last_ep_reward: {:5.1f}".format(
+              #  ep_count, self.global_running_r[-1])
 
         push_notebook()  # self.nb_handle

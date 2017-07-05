@@ -16,7 +16,7 @@ GAME_PARAMS = edict()
 
 NUM_PLAYERS = 1
 
-NUM_NPC = 1
+NUM_NPC = 30
 
 PLAYER_INIT_RADIUS = (0.0, 0.75)
 
@@ -55,7 +55,7 @@ BASE_PLAYER = edict(
     direct = Vector2(0, 0),
     speed = 10.0,
     radius = 0.3,
-    max_hp = 100,
+    max_hp = 1000,
     camp = Camp[0],
     skills=list(SKILL_DICT.values())
 )
