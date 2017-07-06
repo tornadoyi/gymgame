@@ -15,9 +15,11 @@ config.MAP_SIZE = Vector2(30, 30)
 
 config.GRID_SIZE = config.MAP_SIZE
 
-config.NUM_BULLET = 50
+config.NUM_BULLET = 0
 
-config.NUM_COIN = 50
+config.NUM_COIN = 30
+
+config.COIN_WANDER = True
 
 
 

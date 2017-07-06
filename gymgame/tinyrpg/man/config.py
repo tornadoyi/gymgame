@@ -33,6 +33,8 @@ COIN_REVIVE = True
 
 COIN_RECOVER_HP = False
 
+COIN_WANDER = False
+
 
 
 BASE_PLAYER = edict(
@@ -59,6 +61,7 @@ BASE_COIN = edict(
     id = "coin-{0}",
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
+    speed = 1.0,
     radius = 0.1,
     max_hp = 1,
 )

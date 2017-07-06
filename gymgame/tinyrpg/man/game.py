@@ -1,4 +1,4 @@
-from gymgame.engine import extension
+from gymgame.engine import extension, Vector2
 from .. import framework
 from . import config
 import numpy as np
@@ -71,19 +71,38 @@ class Bullet(framework.NPC):
 
 
 class Coin(framework.NPC):
-    def _update(self):
-        if self.attribute.hp > 1e-6: return
+    def __init__(self, *args, **kwargs):
+        super(Coin, self).__init__(*args, **kwargs)
+        self._last_wander_time = None
 
-        # revive
-        if config.COIN_REVIVE:
-            self.revive()
+
+    def _update(self):
+        if self.attribute.hp > 1e-6:
+            if config.COIN_WANDER: self.wander()
+
         else:
-            self.map.remove(self.attribute.id)
+            # revive
+            if config.COIN_REVIVE:
+                self.revive()
+            else:
+                self.map.remove(self.attribute.id)
 
 
     def revive(self):
         self.attribute.hp = self.attribute.max_hp
         self.attribute.position = config.gen_init_position(self.map.bounds.center, config.COIN_INIT_RADIUS)
+
+
+    def wander(self):
+        if self._last_wander_time is None: self._last_wander_time = self.game.time
+        curtime = self.game.time
+        if curtime - self._last_wander_time > 1:
+            self._last_wander_time = curtime
+            direct = Vector2(*np.random.uniform(-1, 1, 2))
+            self.move_toward(direct)
+        else:
+            self.move_toward(self.attribute.direct)
+
 
 
 
