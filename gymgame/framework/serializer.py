@@ -147,11 +147,11 @@ class Serializer(object):
 
         # get num state
         if isinstance(states, (tuple, list)):
-            self._num_state = 1
-            self._state_shapes = [states.shape]
-        else:
             self._num_state = len(states)
             self._state_shapes = tuple([s.shape for s in states])
+        else:
+            self._num_state = 1
+            self._state_shapes = [states.shape]
 
 
 
