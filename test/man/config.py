@@ -9,18 +9,27 @@ Attr = config.Attr
 
 GAME_NAME = config.GAME_NAME
 
-
 # env constant
-config.MAP_SIZE = Vector2(30, 30)
 
-config.GRID_SIZE = config.MAP_SIZE
+config.GAME_PARAMS.fps = 1
 
-config.NUM_BULLET = 0
+config.MAP_SIZE = Vector2(10, 10)
 
-config.NUM_COIN = 30
+config.NUM_BULLET = 40
 
-config.COIN_WANDER = True
+config.NUM_COIN = 0
 
+config.BULLET_INIT_RADIUS = (0.99, 1.0)
+
+config.COIN_WANDER = False
+
+config.BASE_PLAYER.speed = 0.5
+
+config.BASE_PLAYER.radius = 0.3
+
+config.BASE_BULLET.speed = 0.5
+
+config.BASE_BULLET.radius = 0.1
 
 
 @extension(man.Serializer)
