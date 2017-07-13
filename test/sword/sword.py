@@ -4,7 +4,7 @@ import time
 import gym
 from gymgame.tinyrpg.sword import config
 
-#config.NUM_NPC = 30
+#config.NUM_NPC = 1
 
 #config.BASE_PLAYER.max_hp = 10**3
 
