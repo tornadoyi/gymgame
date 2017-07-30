@@ -67,7 +67,8 @@ class Bullet(framework.NPC):
             index = np.random.randint(0, len(players))
             player = players[index]
             self.attribute.hp = self.attribute.max_hp
-            self.attribute.direct = config.gen_aim_direct(self.attribute.position, player.attribute.position)
+            self.attribute.direct = config.gen_aim_direct(self.attribute.position, player.attribute.position,
+                                                          config.BULLET_AIM_PROBABILITY, config.BULLET_DIRECT_SHAKE_ANGLE)
 
 
 class Coin(framework.NPC):

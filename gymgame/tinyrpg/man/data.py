@@ -46,7 +46,7 @@ class Data(data.Data):
         for i in range(config.NUM_BULLET):
             # position and direct
             position = config.gen_init_position(self.map_center, config.BULLET_INIT_RADIUS)
-            direct = config.gen_aim_direct(position, player.position)
+            direct = config.gen_aim_direct(position, player.position, config.BULLET_AIM_PROBABILITY, config.BULLET_DIRECT_SHAKE_ANGLE)
 
             bullet = copy.deepcopy(config.BASE_BULLET)
             bullet.id = bullet.id.format(i)

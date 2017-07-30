@@ -9,7 +9,7 @@ MAP_SIZE = Vector2(10, 10)
 
 GRID_SIZE = None
 
-GAME_PARAMS = edict()
+GAME_PARAMS = edict(fps=1)
 
 NUM_PLAYERS = 1
 
@@ -21,9 +21,9 @@ BULLET_AIM_PROBABILITY = 0.3
 
 BULLET_DIRECT_SHAKE_ANGLE = 30
 
-PLAYER_INIT_RADIUS = (0.0, 0.25)
+PLAYER_INIT_RADIUS = (0.0, 0.2)
 
-BULLET_INIT_RADIUS = (0.75, 1.0)
+BULLET_INIT_RADIUS = (0.99, 1.0)
 
 COIN_INIT_RADIUS = (0.3, 1.0)
 
@@ -41,8 +41,8 @@ BASE_PLAYER = edict(
     id = "player-{0}",
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
-    speed = 10.0,
-    radius = 0.5,
+    speed = 0.5,
+    radius = 0.3,
     max_hp = 1,
 )
 
@@ -51,7 +51,7 @@ BASE_BULLET = edict(
     id = "bullet-{0}",
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
-    speed = 10.0,
+    speed = 0.5,
     radius = 0.1,
     max_hp = 1,
 )
@@ -61,7 +61,7 @@ BASE_COIN = edict(
     id = "coin-{0}",
     position = Vector2(0, 0),
     direct = Vector2(0, 0),
-    speed = 1.0,
+    speed = 0.05,
     radius = 0.1,
     max_hp = 1,
 )
@@ -78,7 +78,7 @@ def gen_init_position(center, r_range):
 
 
 
-def gen_aim_direct(src_pos, dst_pos, probability=BULLET_AIM_PROBABILITY, shake_angle=BULLET_DIRECT_SHAKE_ANGLE):
+def gen_aim_direct(src_pos, dst_pos, probability, shake_angle):
     def _aim():
         direct = dst_pos - src_pos
         angle = np.random.uniform(-shake_angle, shake_angle)
