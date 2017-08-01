@@ -51,8 +51,10 @@ class Bullet(framework.NPC):
 
     def _update(self):
         self.move_toward(self.attribute.direct, bounds_limit=False)
-        if self.attribute.hp > 1e-6 and self._map.in_bounds(self.attribute.position): return
+        if not self._map.in_bounds(self.attribute.position): self.dead()
 
+
+    def dead(self):
         # revive
         if config.BULLET_REVIVE:
             self.revive()
@@ -78,15 +80,15 @@ class Coin(framework.NPC):
 
 
     def _update(self):
-        if self.attribute.hp > 1e-6:
-            if config.COIN_WANDER: self.wander()
+        if config.COIN_WANDER: self.wander()
 
+
+    def dead(self):
+        # revive
+        if config.COIN_REVIVE:
+            self.revive()
         else:
-            # revive
-            if config.COIN_REVIVE:
-                self.revive()
-            else:
-                self.map.remove(self.attribute.id)
+            self.map.remove(self.attribute.id)
 
 
     def revive(self):
@@ -170,7 +172,7 @@ class Game(framework.Game):
             else:
                 player.get_coin(npc.hp)
 
-            npc.attribute.hp = 0
+            npc.dead()
 
 
 
