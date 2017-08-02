@@ -198,7 +198,7 @@ class SkillManager(object):
             self._cast_end(target, position)
 
         else:
-            self._master.schedule(skill.cast_time, self._cast_end, target, position)
+            self._master.schedule_once(skill.cast_time, self._cast_end, target, position)
 
 
 

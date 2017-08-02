@@ -48,6 +48,10 @@ SKILL_DICT = {
     ),
 }
 
+PLAYER_SKILL_LIST = SKILL_DICT.values()
+
+NPC_SKILL_LIST = SKILL_DICT.values()
+
 
 BASE_PLAYER = edict(
     id = "player-{0}",
@@ -57,7 +61,7 @@ BASE_PLAYER = edict(
     radius = 0.3,
     max_hp = 1000,
     camp = Camp[0],
-    skills=list(SKILL_DICT.values())
+    skills=PLAYER_SKILL_LIST,
 )
 
 
@@ -84,8 +88,8 @@ def gen_init_position(center, r_range):
 
 
 
-def gen_random_skills(count):
-    all_skills = list(SKILL_DICT.values())
+def gen_npc_random_skills(count):
+    all_skills = NPC_SKILL_LIST
     count = np.min([len(all_skills), count])
     indexes = random.sample(range(len(all_skills)), count)
     return [all_skills[idx] for idx in indexes]

@@ -26,6 +26,10 @@ class NPC(framework.NPC):
         return self._ai()
 
 
+    def dead(self):
+        # check death
+        self.map.remove(self.attribute.id)
+
 
 
 
@@ -72,6 +76,12 @@ class Game(framework.Game):
             char = chars[i_char]
             bullet = bullets[i_bullet]
             bullet.on_hit(char)
+
+
+        # check dead
+        for npc in self.map.npcs:
+            if npc.attribute.hp > 1e-6: continue
+            npc.dead()
 
 
 

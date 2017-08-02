@@ -1,14 +1,23 @@
 
 
 class _Timer(object):
-    def __init__(self, endtime, callback, *args, **kwargs):
-        self.endtime = endtime
+    def __init__(self, delay, repeated, callback, *args, **kwargs):
+        self.delay = delay
+        self.repeated = repeated
         self.callback = callback
         self.args = args
         self.kwargs = kwargs
+        self.startime = None
+        self.endtime = None
 
 
     def __call__(self): self.callback(*self.args, **self.kwargs)
+
+
+    def refresh(self, starttime):
+        self.startime = starttime
+        self.endtime = starttime + self.delay
+
 
 
 class Scheduler(object):
@@ -43,28 +52,21 @@ class Scheduler(object):
         # call timer
         self._timers = timers[count :]
         for i in range(count):
-            timers[i]()
+            t = timers[i]
+            t()
+            if not t.repeated: continue
+            self._save_timer(t)
+
 
 
     def schedule(self, delay, f, *args, **kwargs):
-        endtime = self._time + delay
-        t = _Timer(endtime, f, *args, **kwargs)
+        t = _Timer(delay, True, f, *args, **kwargs)
+        self._save_timer(t)
 
-        if len(self._timers) == 0:
-            self._timers.append(t)
-            return
 
-        # binary search
-        timers = self._timers
-        st = 0
-        ed = len(timers)
-        while st < ed:
-            md = int(st + ed) >> 1
-            v = timers[md]
-            if v.endtime > t.endtime: ed = md - 1
-            elif v.endtime < t.endtime: st = md + 1
-
-        timers.insert(st, t)
+    def schedule_once(self, delay, f, *args, **kwargs):
+        t = _Timer(delay, False, f, *args, **kwargs)
+        self._save_timer(t)
 
 
 
@@ -79,3 +81,25 @@ class Scheduler(object):
 
 
     def unschedule_all(self): self._timers = []
+
+
+    def _save_timer(self, t):
+        t.refresh(self._time)
+        timers = self._timers
+
+        if len(timers) == 0:
+            timers.append(t)
+            return
+
+        # binary search
+        st = 0
+        ed = len(timers)
+        while st < ed:
+            md = int(st + ed) >> 1
+            v = timers[md]
+            if v.endtime > t.endtime:
+                ed = md - 1
+            else:
+                st = md + 1
+
+        timers.insert(st, t)

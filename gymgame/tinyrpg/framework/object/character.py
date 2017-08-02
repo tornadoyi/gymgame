@@ -52,9 +52,15 @@ class Character(Object):
         self._add_attr('plus', Attr.max_mp, base=0.0, range=(0, np.inf))
         self._add_attr('value', Attr.hp, base=self._attribute.max_hp, range=(0, lambda: self._attribute.max_hp))
         self._add_attr('value', Attr.mp, base=self._attribute.max_mp, range=(0, lambda: self._attribute.max_mp))
+        self._add_attr('value', Attr.recover_hp, base=self._attribute.max_hp, range=(0, np.inf))
+        self._add_attr('value', Attr.recover_mp, base=self._attribute.max_hp, range=(0, np.inf))
 
+        # recover
+        def recover_hp(): self.attribute.hp += self.attribute.recover_hp
+        def recover_mp(): self.attribute.mp += self.attribute.recover_mp
 
-
+        self.schedule_once(1.0, recover_hp)
+        self.schedule_once(1.0, recover_mp)
 
 
 

@@ -88,6 +88,8 @@ class Serializer(framework.Serializer):
         k.do(attr.max_hp, None, k.n_div_tag, Attr.max_hp)
         k.do(attr.mp, None, k.n_div_tag, Attr.mp)
         k.do(attr.max_mp, None, k.n_div_tag, Attr.max_mp)
+        k.do(attr.recover_hp, None, k.n_div_tag, Attr.recover_hp)
+        k.do(attr.recover_mp, None, k.n_div_tag, Attr.recover_mp)
 
 
     def _serialize_object(self, k, obj):

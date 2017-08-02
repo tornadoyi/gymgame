@@ -18,6 +18,8 @@ Attr = _enum(
     'mp',
     'max_mp',
     'camp',
+    'recover_hp',
+    'recover_mp',
 
     # bullet
     # hp
