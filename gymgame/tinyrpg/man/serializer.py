@@ -17,10 +17,13 @@ class Serializer(framework.Serializer):
     def _start(self, game):
         k = self._create_kernel(game)
         map = game.map
+
+        self._player_shape = k.do_object(map.players[0], self._serialize_player).shape if len(map.players) > 0 else None
         self._coin_shape = k.do_object(map.coins[0], self._serialize_npc).shape if len(map.coins) > 0 else None
+        self._bullet_shape = k.do_object(map.bullet[0], self._serialize_npc).shape if len(map.bullets) > 0 else None
 
         # call parent _start
-        super(Serializer, self)._start(game)
+        super(framework.Serializer, self)._start(game)
 
 
 
