@@ -31,5 +31,5 @@ register(
     id=config.GAME_NAME,
     entry_point='gymgame.tinyrpg.sword:EnvironmentGym',
     max_episode_steps=1e+10,
-    kwargs={'initializer': lambda: (game.make(), Serializer()) }
+    kwargs={'initializer': lambda: (game.make(), Serializer(config.GRID_SIZE)) }
 )

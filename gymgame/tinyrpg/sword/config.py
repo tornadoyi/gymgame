@@ -12,6 +12,8 @@ GAME_NAME = "tiny-rpg-sword-v0"
 
 MAP_SIZE = Vector2(10, 10)
 
+GRID_SIZE = None
+
 GAME_PARAMS = edict()
 
 NUM_PLAYERS = 1
