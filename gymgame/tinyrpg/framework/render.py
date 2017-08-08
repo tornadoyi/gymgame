@@ -1,9 +1,10 @@
 import numpy as np
 from easydict import EasyDict as edict
 from bokeh.io import output_notebook, show, push_notebook
-from bokeh.plotting import figure
+from bokeh.client import push_session
+from bokeh.plotting import figure, curdoc
 from bokeh.layouts import gridplot
-from gymgame.tinyrpg.sword import config
+from gymgame.tinyrpg.framework import config
 import colorsys
 import warnings
 warnings.filterwarnings('ignore')
@@ -135,7 +136,8 @@ class MapRender(RenderBase):
 class Render(object):
     def __init__(self, env,
                  map_render=None, npc_render=None, player_render=None, bullet_render=None,
-                 custom_renders=[]):
+                 custom_renders=[], bokeh_mode="notebook"):
+        """bokeh_mode: notebook/bokeh_serve(need firstly run `bokeh serve`)"""
 
         self._env = env
         self._game = env.game
@@ -146,9 +148,9 @@ class Render(object):
         self._custom_renders = custom_renders
         self._plot_dict = edict()
 
-        # output_notebook
-        output_notebook()
-
+        self.bokeh_mode = bokeh_mode
+        if self.bokeh_mode == "notebook":
+            output_notebook()
 
         # initialize
         self._map_render.initialize(self._env, self._game, self._plot_dict)
@@ -157,7 +159,12 @@ class Render(object):
         self._bullet_render.initialize(self._env, self._game, self._plot_dict)
         for render in self._custom_renders: render.initialize(self._env, self._game, self._plot_dict)
 
-        show(self._plot_dict.map, notebook_handle=True)
+        # show the results
+        if self.bokeh_mode == "notebook":
+            show(self._plot_dict.map, notebook_handle=True)
+        else:
+            session = push_session(curdoc())
+            session.show(self._plot_dict.map)
 
 
     def __call__(self, *args, **kwargs):
@@ -166,7 +173,8 @@ class Render(object):
         self._player_render(self._env, self._game)
         self._bullet_render(self._env, self._game)
         for render in self._custom_renders: render(self._env, self._game)
-        push_notebook()
+        if self.bokeh_mode == "notebook":
+            push_notebook()  # self.nb_handle
 
 
 
