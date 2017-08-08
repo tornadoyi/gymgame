@@ -102,6 +102,8 @@ def record(render=False):
     rounds = []
     rnd = Round()
 
+    demos = []
+
     def on_press(key):
         if key not in ACTION_KEYS: return
 
@@ -109,7 +111,12 @@ def record(render=False):
         a = ACTION_KEYS.index(key)
         rnd.save(env, a)
 
-        env.step(ACTION_KEYS.index(key))
+        s = env.state
+        s_, r, d, _ = env.step(ACTION_KEYS.index(key))
+
+        demo = dict(state=s, action=a, reward=r, terminal=d,
+                    internal=[])
+        demos.append(demo)
 
         if render: env.render()
         if env.terminal:
@@ -121,7 +128,7 @@ def record(render=False):
             # save to file
             print('save to file')
             with open(record_dir, 'wb') as f:
-                pickle.dump(rounds, f, pickle.HIGHEST_PROTOCOL)
+                pickle.dump(demos, f, pickle.HIGHEST_PROTOCOL)
 
     with keyboard.Listener(on_press=on_press) as listener:
         listener.join()

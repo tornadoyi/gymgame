@@ -1,16 +1,15 @@
 import numpy as np
 from gymgame import framework
+from gymgame.framework import env_stack
 from gym import envs, spaces
 from gym.envs import register
 from . import config
 from . import game
 from .serializer import Serializer
-from .render import Render
+from .render_bokehserve import Render
 
 
-
-
-class EnvironmentGym(framework.EnvironmentGym):
+class EnvironmentGym(env_stack.GymStackEnv):
     def __init__(self, *args, **kwargs):
         super(EnvironmentGym, self).__init__(*args, **kwargs)
         self._window = None
