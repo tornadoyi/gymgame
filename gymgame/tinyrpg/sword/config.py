@@ -9,6 +9,7 @@ from ..framework.object.bullet import *
 
 GAME_NAME = "tiny-rpg-sword-v0"
 
+BOKEH_MODE = "notebook"
 
 MAP_SIZE = Vector2(10, 10)
 

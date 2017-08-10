@@ -4,7 +4,8 @@ from gym.envs import register
 from . import config
 from . import game
 from .serializer import Serializer
-from .render import Render
+from gymgame.tinyrpg.framework.render import Render
+# from .render import Render
 
 
 
@@ -21,7 +22,7 @@ class EnvironmentGym(framework.EnvironmentGym):
 
     def _render(self, *args, **kwargs):
         if self._window is None:
-            self._window = Render(self)
+            self._window = Render(self, bokeh_mode=config.BOKEH_MODE)
         else:
             self._window()
 
