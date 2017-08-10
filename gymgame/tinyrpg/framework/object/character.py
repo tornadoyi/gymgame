@@ -56,11 +56,7 @@ class Character(Object):
         self._add_attr('value', Attr.recover_mp, base=0, range=(0, np.inf))
 
         # recover
-        def recover_hp():
-            print(self.attribute.recover_hp)
-            self.attribute.hp += self.attribute.recover_hp
-
-
+        def recover_hp(): self.attribute.hp += self.attribute.recover_hp
 
         def recover_mp(): self.attribute.mp += self.attribute.recover_mp
 
