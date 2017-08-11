@@ -53,7 +53,7 @@ class Vector2(Vector):
     def rotate(self, angle):
         r = math.radians(angle)
         x, y = self.x, self.y
-        return Vector2(np.cos(r) * x + np.sin(r) * y, -np.sin(r) * x + np.cos(r) * y)
+        return Vector2(np.cos(r) * x - np.sin(r) * y, np.sin(r) * x + np.cos(r) * y)
 
 
 
