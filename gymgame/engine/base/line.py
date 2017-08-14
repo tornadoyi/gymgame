@@ -28,12 +28,16 @@ class Line2(Line):
 
 
     def cross(self, line):
-        v = self.end - self.start
-        v0 = line.start - self.start
-        v1 = line.end - self.end
-        s0 = v.x * v0.y - v.y * v0.x
-        s1 = v.x * v1.y - v.y * v1.x
-        return s0 * s1 <= 0
+
+        def check(l1, l2):
+            v = l1.end - l1.start
+            v0 = l2.start - l1.start
+            v1 = l2.end - l1.start
+            s0 = v.x * v0.y - v.y * v0.x
+            s1 = v.x * v1.y - v.y * v1.x
+            return s0 * s1 <= 0
+
+        return check(self, line) and check(line, self)
 
 
     def cross_point(self, line):
