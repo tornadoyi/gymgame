@@ -21,7 +21,7 @@ class EnvironmentGym(framework.EnvironmentGym):
 
     def _render(self, *args, **kwargs):
         if self._game.renderer is None:
-            self._game.renderer = Renderer(self._game)
+            self._game.renderer = Renderer(self._game, config.RENDER_MODE)
         else:
             self._game.render()
 
