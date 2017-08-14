@@ -20,7 +20,7 @@ CAMP_COLORS = {_c: CAMP_COLORS[_i]
 
 class ModuleRenderer():
 
-    def __call__(self, game): pass
+    def __call__(self): pass
 
     def initialize(self, render_state):
         self.render_state = render_state
@@ -85,13 +85,13 @@ class BulletRenderer(ObjectRenderer):
             # fill_alpha=0.6
         )
 
-    def __call__(self, game):
-        all_x = [_.attribute.position.x for _ in game.map.bullets]
-        all_y = [_.attribute.position.y for _ in game.map.bullets]
+    def __call__(self):
+        all_x = [_.attribute.position.x for _ in self.game.map.bullets]
+        all_y = [_.attribute.position.y for _ in self.game.map.bullets]
         self.rd_bullets.data_source.data['x'] = all_x
         self.rd_bullets.data_source.data['y'] = all_y
         # 注意!! radius 必须设置上, 否则如果初始化时radius为空, 则后续再也无法显示出来了
-        self.rd_bullets.data_source.data['radius'] = [_.attribute.radius for _ in game.map.bullets]
+        self.rd_bullets.data_source.data['radius'] = [_.attribute.radius for _ in self.game.map.bullets]
 
 
 class MapRenderer(ModuleRenderer):

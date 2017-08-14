@@ -48,7 +48,7 @@ class BokehRenderer(Renderer):
 
 
     def _show(self, plots):
-        plot = plots if isinstance(plots, (list, tuple)) else self._grid_plots(plots)
+        plot = self._grid_plots(plots) if isinstance(plots, (list, tuple)) else plots
 
         # show the results
         if self._mode == "notebook":
