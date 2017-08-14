@@ -167,10 +167,10 @@ class Game(framework.Game):
             player = players[i_player]
             npc = npcs[i_npc]
             if isinstance(npc, Bullet):
-                player.hit(npc.hp)
+                player.hit(npc.attribute.hp)
 
             else:
-                player.get_coin(npc.hp)
+                player.get_coin(npc.attribute.hp)
 
             npc.dead()
 

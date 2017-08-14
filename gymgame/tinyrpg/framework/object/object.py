@@ -20,7 +20,7 @@ class Object(Scheduler):
         self._game = None
 
 
-    def __getattr__(self, attr_name): return getattr(self._attribute, attr_name)
+    #def __getattr__(self, attr_name): return getattr(self._attribute, attr_name)
 
 
     @property

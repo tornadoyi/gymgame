@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from bokeh.io import output_notebook, show, push_notebook
-from bokeh.plotting import figure
-from bokeh.layouts import gridplot
 import numpy as np
 import random
 import time
+from bokeh.io import output_notebook, show, push_notebook
+from bokeh.plotting import figure
+from bokeh.layouts import gridplot
+from .. import framework
 
 # ! only used to temporarily shutdown bokeh warning !
 import warnings
@@ -15,11 +16,11 @@ warnings.filterwarnings('ignore')
 #  lambda: warnings.warn("ColumnDataSource's columns must be of the same length", BokehUserWarning))
 
 
-class Render(object):
+class Renderer(framework.Renderer):
     """A game dashboard to show the game state"""
-    def __init__(self, env):
-        self._env = env
-        self._game = env.game
+    def __init__(self, game):
+        #super(Render, self).__init__(*args, **kwargs)
+        self._game = game
         self._map = self._game.map
         self.global_running_r = []
 
@@ -90,7 +91,7 @@ class Render(object):
 
 
 
-    def update(self):
+    def __call__(self, *args, **kwargs):
         """update bokeh plots according to new env state and action data"""
 
         # self._plt_map.title.text = "step: #{}".format(current_step)
@@ -115,17 +116,18 @@ class Render(object):
         # self.rd_loc.data_source.data['line_width'] = [10] * self.player_num + [thief_lw] * self.bullet_num
 
         # update training performance after each episode
-        if self._game.terminal:
-            ep_reward = sum(self._env.rewards)
-            ep_count = len(self.global_running_r)
-            if len(self.global_running_r) == 0:  # record running episode reward
-                self.global_running_r.append(ep_reward)
-            else:
-                self.global_running_r.append(0.99 * self.global_running_r[-1] + 0.01 * ep_reward)
-
-            self.rd_reward.data_source.data['x'] = range(ep_count)
-            self.rd_reward.data_source.data['y'] = self.global_running_r
-            #self.plt_reward.title.text = "episode #{} / last_ep_reward: {:5.1f}".format(
-              #  ep_count, self.global_running_r[-1])
+        # close running reward
+        # if self._game.terminal:
+        #     ep_reward = sum(self._env.rewards)
+        #     ep_count = len(self.global_running_r)
+        #     if len(self.global_running_r) == 0:  # record running episode reward
+        #         self.global_running_r.append(ep_reward)
+        #     else:
+        #         self.global_running_r.append(0.99 * self.global_running_r[-1] + 0.01 * ep_reward)
+        #
+        #     self.rd_reward.data_source.data['x'] = range(ep_count)
+        #     self.rd_reward.data_source.data['y'] = self.global_running_r
+        #     #self.plt_reward.title.text = "episode #{} / last_ep_reward: {:5.1f}".format(
+        #       #  ep_count, self.global_running_r[-1])
 
         push_notebook()  # self.nb_handle

@@ -5,7 +5,7 @@ from gym.envs import register
 from . import config
 from . import game
 from .serializer import Serializer
-from .render import Render
+from .render import Renderer
 
 
 
@@ -13,7 +13,6 @@ from .render import Render
 class EnvironmentGym(framework.EnvironmentGym):
     def __init__(self, *args, **kwargs):
         super(EnvironmentGym, self).__init__(*args, **kwargs)
-        self._window = None
 
     def _init_action_space(self): return spaces.Box(low=-1, high=1, shape=(2,))
 
@@ -22,10 +21,10 @@ class EnvironmentGym(framework.EnvironmentGym):
 
 
     def _render(self, *args, **kwargs):
-        if self._window is None:
-            self._window = Render(self)
+        if self._game.renderer is None:
+            self._game.renderer = Renderer(self._game)
         else:
-            self._window.update()
+            self._game.render()
 
 
     def _reward(self):

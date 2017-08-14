@@ -1,12 +1,11 @@
 import numpy as np
 from easydict import EasyDict as edict
-from bokeh.io import output_notebook, show, push_notebook
-from bokeh.client import push_session
 from bokeh.plotting import figure, curdoc
 from bokeh.layouts import gridplot
 from gymgame.tinyrpg.framework import config
 import colorsys
 import warnings
+from gymgame import framework
 warnings.filterwarnings('ignore')
 
 # https://en.wikipedia.org/wiki/List_of_colors:_A%E2%80%93F
@@ -15,30 +14,32 @@ CAMP_COLORS = ["#568203", "#003A6C", "#e32636", "#efdecd", "#e52b50", "#ffbf00",
                "#8db600", "#fbceb1", "#00ffff", "#7fffd4", "#4b5320", "#e9d66b", "#b2beb5",
                "#87a96b", "#ff9966", "#a52a2a", "#fdee00", "#6e7f80", "#ff2052", "#007fff",
                "#f0ffff", "#89cff0", "#a1caf1", "#f4c2c2"]
+
 CAMP_COLORS = {_c: CAMP_COLORS[_i]
                for _i, _c in enumerate(config.Camp)}
 
-class RenderBase():
+class ModuleRenderer():
 
-    def __call__(self, env, game): pass
+    def __call__(self, game): pass
 
-    def initialize(self, env, game, plot_dict): pass
-
-
-class NoneRender(RenderBase):
-    pass
+    def initialize(self, render_state):
+        self.render_state = render_state
+        self.game = render_state.game
 
 
-class ObjectRender(RenderBase):
-    pass
+class NoneRenderer(ModuleRenderer): pass
 
 
-class CharacterRender(ObjectRender):
-    def initialize(self, env, game, plot_dict):
-        c_list = game.map.characters
+class ObjectRenderer(ModuleRenderer): pass
+
+
+class CharacterRenderer(ObjectRenderer):
+    def initialize(self, *args, **kwargs):
+        super(CharacterRenderer, self).initialize(*args, **kwargs)
+        c_list = self.game.map.characters
         c_num = len(c_list)
 
-        self.rd = plot_dict.map.circle(
+        self.rd = self.render_state.map.circle(
             [-1] * c_num, [-1] * c_num,
             radius=[_.attribute.radius for _ in c_list],
             line_color=[self._get_line_color(_) for _ in c_list],
@@ -52,8 +53,8 @@ class CharacterRender(ObjectRender):
         # now we only consider single camp situation
         return CAMP_COLORS[character.attribute.camp]
 
-    def __call__(self, env, game):
-        c_list = game.map.characters
+    def __call__(self):
+        c_list = self.game.map.characters
         all_x = [_.attribute.position.x for _ in c_list]
         all_y = [_.attribute.position.y for _ in c_list]
         self.rd.data_source.data['x'] = all_x
@@ -64,20 +65,18 @@ class CharacterRender(ObjectRender):
         self.rd.data_source.data['fill_alpha'] = [_c.attribute.hp / _c.attribute.max_hp for _c in c_list]
 
 
-class NPCRender(CharacterRender):
-    pass
+class NPCRenderer(CharacterRenderer): pass
+
+class PlayerRenderer(CharacterRenderer): pass
 
 
-class PlayerRender(CharacterRender):
-    pass
-
-
-class BulletRender(ObjectRender):
-    def initialize(self, env, game, plot_dict):
-        bullet_num = len(game.map.bullets)
-        self.rd_bullets = plot_dict.map.circle(
+class BulletRenderer(ObjectRenderer):
+    def initialize(self, *args, **kwargs):
+        super(BulletRenderer, self).initialize(*args, **kwargs)
+        bullet_num = len(self.game.map.bullets)
+        self.rd_bullets = self.render_state.map.circle(
             [-1] * bullet_num, [-1] * bullet_num,
-            radius=[_.attribute.radius for _ in game.map.bullets],
+            radius=[_.attribute.radius for _ in self.game.map.bullets],
             line_color="red",
             fill_color="purple",
             fill_alpha=0.6
@@ -86,7 +85,7 @@ class BulletRender(ObjectRender):
             # fill_alpha=0.6
         )
 
-    def __call__(self, env, game):
+    def __call__(self, game):
         all_x = [_.attribute.position.x for _ in game.map.bullets]
         all_y = [_.attribute.position.y for _ in game.map.bullets]
         self.rd_bullets.data_source.data['x'] = all_x
@@ -95,7 +94,7 @@ class BulletRender(ObjectRender):
         self.rd_bullets.data_source.data['radius'] = [_.attribute.radius for _ in game.map.bullets]
 
 
-class MapRender(RenderBase):
+class MapRenderer(ModuleRenderer):
     def __init__(self, witdh=600, height=600):
         self._with = witdh
         self._height = height
@@ -104,8 +103,9 @@ class MapRender(RenderBase):
     def plot_map(self): return self._plt_map
 
 
-    def initialize(self, env, game, plot_dict):
-        map = game.map
+    def initialize(self, *args, **kwargs):
+        super(MapRenderer, self).initialize(*args, **kwargs)
+        map = self.game.map
         # create figure
         bounds = map.bounds
         _x_min, _x_max = int(bounds.min.x), int(bounds.max.x)
@@ -125,7 +125,8 @@ class MapRender(RenderBase):
                            y=[_y_min, _y_min, _y_max, _y_max, _y_min],
                            line_color="navy", line_alpha=0.3, line_dash="dotted", line_width=2)
 
-        plot_dict.map = self._plt_map
+        self.render_state.map = self._plt_map
+        return self._plt_map
 
 
 
@@ -133,57 +134,36 @@ class MapRender(RenderBase):
 
 
 
-class Render(object):
-    def __init__(self, env,
+class Renderer(framework.BokehRenderer):
+    def __init__(self, game, mode="notebook",
                  map_render=None, npc_render=None, player_render=None, bullet_render=None,
-                 custom_renders=[], bokeh_mode="notebook"):
+                 custom_renders=[]):
         """bokeh_mode: notebook/bokeh_serve(need firstly run `bokeh serve`)"""
 
-        self._env = env
-        self._game = env.game
-        self._map_render = map_render or MapRender()
-        self._npc_render = npc_render or NPCRender()
-        self._player_render = player_render or PlayerRender()
-        self._bullet_render = bullet_render or BulletRender()
+        super(Renderer, self).__init__(game, mode)
+        self._map_render = map_render or MapRenderer()
+        self._npc_render = npc_render or NPCRenderer()
+        self._player_render = player_render or PlayerRenderer()
+        self._bullet_render = bullet_render or BulletRenderer()
         self._custom_renders = custom_renders
-        self._plot_dict = edict()
+        self._renders = [self._map_render, self._npc_render, self._player_render, self._bullet_render] + self._custom_renders
+        self._render_state = edict(game=game)
 
-        self.bokeh_mode = bokeh_mode
-        if self.bokeh_mode == "notebook":
-            output_notebook()
 
         # initialize
-        self._map_render.initialize(self._env, self._game, self._plot_dict)
-        self._npc_render.initialize(self._env, self._game, self._plot_dict)
-        self._player_render.initialize(self._env, self._game, self._plot_dict)
-        self._bullet_render.initialize(self._env, self._game, self._plot_dict)
-        for render in self._custom_renders: render.initialize(self._env, self._game, self._plot_dict)
+        plots = []
+        for r in self._renders:
+            plot = r.initialize(self._render_state)
+            if plot is None: continue
+            plots.append(plot)
 
         # show the results
-        if self.bokeh_mode == "notebook":
-            show(self._plot_dict.map, notebook_handle=True)
-        else:
-            session = push_session(curdoc())
-            session.show(self._plot_dict.map)
+        self._show(plots)
 
 
     def __call__(self, *args, **kwargs):
-        self._map_render(self._env, self._game)
-        self._npc_render(self._env, self._game)
-        self._player_render(self._env, self._game)
-        self._bullet_render(self._env, self._game)
-        for render in self._custom_renders: render(self._env, self._game)
-        if self.bokeh_mode == "notebook":
-            push_notebook()  # self.nb_handle
-
-
-
-    @property
-    def env(self): return self._env
-
-
-    @property
-    def game(self): return self._game
+        for r in self._renders: r()
+        super(Renderer, self).__call__()
 
 
 

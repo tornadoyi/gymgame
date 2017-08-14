@@ -8,6 +8,7 @@ class Game(object):
         self._total_resets = 0
         self._total_steps = 0
         self._max_steps = max_steps
+        self._renderer = None
 
 
         # runtime
@@ -49,6 +50,12 @@ class Game(object):
     @property
     def max_steps(self): return self._max_steps
 
+    @property
+    def renderer(self): return self._renderer
+
+    @renderer.setter
+    def renderer(self, v): self._renderer = v
+
 
     # virtual methods
     def _reset(self, *args, **kwargs): raise NotImplementedError("_reset should be implemented")
@@ -57,7 +64,10 @@ class Game(object):
 
     def _close(self, *args, **kwargs): raise NotImplementedError("_close should be implemented")
 
-    def _render(self, *args, **kwargs): raise NotImplementedError("_renders should be implemented")
+    def _render(self, *args, **kwargs):
+        if self._renderer is None: raise NotImplementedError("no renderer for render")
+        self._renderer()
+
 
     def _check_terminal(self): return self._steps >= self._max_steps - 1
 
