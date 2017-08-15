@@ -36,7 +36,7 @@ class ObjectRenderer(ModuleRenderer): pass
 class CharacterRenderer(ObjectRenderer):
     def initialize(self, *args, **kwargs):
         super(CharacterRenderer, self).initialize(*args, **kwargs)
-        c_list = self.game.map.characters
+        c_list = self._get_characters()
         c_num = len(c_list)
 
         self.rd = self.render_state.map.circle(
@@ -48,13 +48,15 @@ class CharacterRenderer(ObjectRenderer):
             fill_alpha=[_c.attribute.hp/_c.attribute.max_hp for _c in c_list]
         )
 
+        self.rd_direct = self.render_state.map.multi_line(xs=[], ys=[], line_color=[], line_width=[])
+
     def _get_line_color(self, character):
         # for multi-camp, use this: [(a >> i) & 1 for i in range(32)]
         # now we only consider single camp situation
         return CAMP_COLORS[character.attribute.camp]
 
-    def __call__(self):
-        c_list = self.game.map.characters
+    def __call__(self, *args, **kwargs):
+        c_list = self._get_characters()
         all_x = [_.attribute.position.x for _ in c_list]
         all_y = [_.attribute.position.y for _ in c_list]
         self.rd.data_source.data['x'] = all_x
@@ -64,10 +66,30 @@ class CharacterRenderer(ObjectRenderer):
         # 暂时用fill_alpha来表示血量的状况
         self.rd.data_source.data['fill_alpha'] = [_c.attribute.hp / _c.attribute.max_hp for _c in c_list]
 
+        direct_x, direct_y = [], []
+        for o in c_list:
+            src = o.attribute.position
+            dst = o.attribute.position + o.attribute.direct * o.attribute.radius * 1.5
+            direct_x.append([src.x, dst.x])
+            direct_y.append([src.y, dst.y])
 
-class NPCRenderer(CharacterRenderer): pass
+        self.rd_direct.data_source.data['xs'] = direct_x
+        self.rd_direct.data_source.data['ys'] = direct_y
+        self.rd_direct.data_source.data['line_color'] = ['black'] * len(c_list)
+        self.rd_direct.data_source.data['line_width'] = [2] * len(c_list)
 
-class PlayerRenderer(CharacterRenderer): pass
+
+    def _get_characters(self): raise NotImplementedError('_get_characters should be impolemented')
+
+
+class NPCRenderer(CharacterRenderer):
+    def _get_characters(self): return self.game.map.npcs
+
+
+
+class PlayerRenderer(CharacterRenderer):
+    def _get_characters(self): return self.game.map.players
+
 
 
 class BulletRenderer(ObjectRenderer):
