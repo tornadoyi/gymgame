@@ -23,8 +23,6 @@ class Bullet(Object):
 
     def move_to(self, position, bounds_limit=False): super(Bullet, self).move_to(position, bounds_limit)
 
-    def can_move_toward(self, direct, speed=None, bounds_limit=False): super(Bullet, self).can_move_toward(direct, speed, bounds_limit)
-
 
     def enter_map(self, map):
         super(Bullet, self).enter_map(map)

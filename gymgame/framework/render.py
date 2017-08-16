@@ -60,4 +60,4 @@ class BokehRenderer(Renderer):
 
     def _grid_plots(self, plots):
         if len(plots) == 1: return plots[0]
-        return self._bokeh.gridplot(plots)
+        return self._bokeh.gridplot([plots])

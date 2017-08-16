@@ -8,6 +8,9 @@ class Environment(object):
         self._game = game
         self._serializer = serializer
 
+        # set env to game
+        self._game.env = self
+
         # init serializer
         game.reset()
         self._serializer.start(game)

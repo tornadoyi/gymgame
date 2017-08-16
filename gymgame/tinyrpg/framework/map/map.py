@@ -100,15 +100,6 @@ class Map(object):
         self._on_move(o)
 
 
-
-    def can_move_toward(self, id, direct, speed=None, bounds_limit=True):
-        if not bounds_limit: return True
-        o = self.find(id)
-        if speed is None: speed = o.attribute.speed
-        tgt_pos = o.attribute.position + direct.normalized * speed * self.game.delta_time
-        return self.bounds.contains(tgt_pos)
-
-
     def in_bounds(self, position): return self._bounds.contains(position)
 
 

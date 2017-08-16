@@ -159,7 +159,7 @@ class MapRenderer(ModuleRenderer):
 class Renderer(framework.BokehRenderer):
     def __init__(self, game, mode="notebook",
                  map_render=None, npc_render=None, player_render=None, bullet_render=None,
-                 custom_renders=[]):
+                 ):
         """bokeh_mode: notebook/bokeh_serve(need firstly run `bokeh serve`)"""
 
         super(Renderer, self).__init__(game, mode)
@@ -167,7 +167,7 @@ class Renderer(framework.BokehRenderer):
         self._npc_render = npc_render or NPCRenderer()
         self._player_render = player_render or PlayerRenderer()
         self._bullet_render = bullet_render or BulletRenderer()
-        self._custom_renders = custom_renders
+        self._custom_renders = self._custom_renderers()
         self._renders = [self._map_render, self._npc_render, self._player_render, self._bullet_render] + self._custom_renders
         self._render_state = edict(game=game)
 
@@ -188,6 +188,8 @@ class Renderer(framework.BokehRenderer):
         super(Renderer, self).__call__()
 
 
+
+    def _custom_renderers(self): return []
 
 
 

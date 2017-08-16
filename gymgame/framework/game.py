@@ -9,6 +9,7 @@ class Game(object):
         self._total_steps = 0
         self._max_steps = max_steps
         self._renderer = None
+        self._env = None
 
 
         # runtime
@@ -55,6 +56,12 @@ class Game(object):
 
     @renderer.setter
     def renderer(self, v): self._renderer = v
+
+    @property
+    def env(self): return self._env
+
+    @env.setter
+    def env(self, v): self._env = v
 
 
     # virtual methods

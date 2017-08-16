@@ -38,11 +38,6 @@ class Character(Object):
         super(Character, self).move_to(position, bounds_limit)
 
 
-    def can_move_toward(self, direct, speed=None, bounds_limit=True):
-        if not self.can_move(): return False
-        super(Character, self).move_toward(direct, speed, bounds_limit)
-
-
     def can_move(self): return not self._skill.busy
 
 
