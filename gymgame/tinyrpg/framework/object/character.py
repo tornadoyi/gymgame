@@ -30,12 +30,17 @@ class Character(Object):
 
     def move_toward(self, direct, speed=None, bounds_limit=True):
         if not self.can_move(): return
-        self._map.move_toward(self.attribute.id, direct, speed, bounds_limit)
+        super(Character, self).move_toward(direct, speed, bounds_limit)
 
 
     def move_to(self, position, bounds_limit=True):
         if not self.can_move(): return
-        self._map.move_to(self.attribute.id, position, bounds_limit)
+        super(Character, self).move_to(position, bounds_limit)
+
+
+    def can_move_toward(self, direct, speed=None, bounds_limit=True):
+        if not self.can_move(): return False
+        super(Character, self).move_toward(direct, speed, bounds_limit)
 
 
     def can_move(self): return not self._skill.busy

@@ -55,9 +55,11 @@ class Object(Scheduler):
 
     def idle(self): pass
 
-    def move_toward(self, direct, speed=None): self._map.move_toward(self.attribute.id, direct, speed)
+    def move_toward(self, direct, speed=None, bounds_limit=True): self._map.move_toward(self.attribute.id, direct, speed, bounds_limit)
 
-    def move_to(self, position): self._map.move_to(self.attribute.id, position)
+    def move_to(self, position, bounds_limit=True): self._map.move_to(self.attribute.id, position, bounds_limit)
+
+    def can_move_toward(self, direct, speed=None, bounds_limit=True): self._map.move_toward(self.attribute.id, direct, speed, bounds_limit)
 
 
     def _init_attribute(self):
