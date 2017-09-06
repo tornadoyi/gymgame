@@ -5,6 +5,9 @@ class Bounds(object):
         self._center = center
         self._size = size
 
+    def __str__(self): return '({} {})'.format(self._center, self._size)
+
+    def __repr__(self): return self.__str__()
 
     @property
     def center(self): return self._center

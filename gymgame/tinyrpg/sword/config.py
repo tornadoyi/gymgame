@@ -13,6 +13,8 @@ RENDER_MODE = "notebook"
 
 MAP_SIZE = Vector2(10, 10)
 
+MAP_BORDER = 1e-6
+
 GRID_SIZE = None
 
 GAME_PARAMS = edict()

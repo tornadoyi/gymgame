@@ -10,7 +10,7 @@ class Data(data.Data):
     @property
     def map_center(self): return config.MAP_SIZE / 2
 
-    def _create_map_info(self): return edict(size=config.MAP_SIZE)
+    def _create_map_info(self): return edict(size=config.MAP_SIZE, border=config.MAP_BORDER)
 
 
     def _create_player_infos(self):

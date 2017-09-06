@@ -8,14 +8,19 @@ from collections import OrderedDict
 #   on_move(map, obj)
 
 class Map(object):
-    def __init__(self, size):
+    def __init__(self, size, border=0):
         self._bounds = Bounds2(size / 2, size)
+        self._border = border
+        self._inner_bounds = Bounds2(size / 2, size-2*self._border)
         self._object_dict = OrderedDict()
         self._game = None
 
 
     @property
     def bounds(self): return self._bounds
+
+    @property
+    def border(self): return self._border
 
     @property
     def game(self): return self._game
@@ -88,10 +93,9 @@ class Map(object):
         tgt_pos = o.attribute.position + direct.normalized * distance
 
         # check out of bound
-        if bounds_limit and not self.bounds.contains(tgt_pos):
-            point = g2d.raycast(o.attribute.position, direct, distance, self.bounds)
-            assert point is not None
-            tgt_pos = o.attribute.position
+        if bounds_limit and not self._inner_bounds.contains(tgt_pos):
+            point = g2d.raycast_max(o.attribute.position, direct, distance, self._inner_bounds)
+            tgt_pos = point if point is not None else o.attribute.position
 
 
         # set attribute
